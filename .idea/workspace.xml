@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="f895279c-5c95-475a-a93c-cd23e738e367" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1XFEdkVmpncceFTJo6nZfdTMwhE" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f895279c-5c95-475a-a93c-cd23e738e367" name="Default Changelist" comment="" />
+      <created>1580633531666</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1580633531666</updated>
+      <workItem from="1580633532893" duration="5731000" />
+      <workItem from="1580781062735" duration="3984000" />
+      <workItem from="1580786035056" duration="13224000" />
+      <workItem from="1580871391957" duration="15063000" />
+      <workItem from="1581325802996" duration="50000" />
+      <workItem from="1581325880838" duration="66000" />
+      <workItem from="1581325955235" duration="8408000" />
+      <workItem from="1581390057128" duration="390000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="413" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1580633538193">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="413" y="260" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1580633538193" />
+    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1581325833239">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1440.900@0.0.1440.900" timestamp="1581325833238" />
+    <state x="415" y="178" key="SettingsEditor" timestamp="1581325946481">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="415" y="178" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1581325946481" />
+    <state x="291" y="328" key="SettingsEditor/1680.0.1048.834/0.0.1680.1050@0.0.1680.1050" timestamp="1580784605662" />
+    <state x="483" y="301" key="cloudConfig.SelfSettingsDialog" timestamp="1580871409190">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="483" y="301" key="cloudConfig.SelfSettingsDialog/0.0.1440.900@0.0.1440.900" timestamp="1580871409190" />
+    <state x="482" y="88" key="refactoring.ChangeSignatureDialog" timestamp="1580810434860">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="482" y="88" key="refactoring.ChangeSignatureDialog/0.0.1440.900@0.0.1440.900" timestamp="1580810434860" />
+  </component>
+</project>
