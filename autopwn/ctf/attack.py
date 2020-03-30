@@ -4,6 +4,7 @@ import sys
 import re
 import autopwn.core.classes
 from pwn import *
+import autopwn.ctf.less_tube
 
 # 0 represents debug
 # 1 represents run
@@ -44,4 +45,5 @@ class Attack(autopwn.core.classes.Autopwn):
         else:
             print("Parameter Error.")
 
+        self.execute = autopwn.ctf.less_tube.add_features(self.execute)
         return self.execute
