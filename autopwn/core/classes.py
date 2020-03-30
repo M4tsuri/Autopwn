@@ -11,55 +11,46 @@ class Autopwn:
         pass
 
 class Server:
-    def __init__(self, server_name, server_class):
-        self.server_name = server_name
+    def __init__(self, server_info, server_class):
+        self.ip_port = self._ip_parse(server_info["ip_port"])
+        self.username = server_info['username']
+        self.password = server_info['password']
         self.method = server_class
 
     # parse nc address and port
-    def _nc_parse(self):
+    @staticmethod
+    def _ip_parse(ip_port):
         res = {
             'host': '',
             'port': 0
         }
-        self.server_name = self.server_name.split(':')
-        res['host'] = self.server_name[0]
-        res['port'] = int(self.server_name[1])
+        server_name = ip_port.split(':')
+        res['host'] = server_name[0]
+        res['port'] = int(server_name[1])
         return res
 
-    # format is username:address:password:port
-    def _ssh_parse(self):
-        res = {
-            'username': '',
-            'host': '',
-            'passwd': '',
-            'port': 21,
-        }
-        self.server_name = self.server_name.split(':')
-        res['username'] = self.server_name[0]
-        res['host'] = self.server_name[1]
-        res['passwd'] = self.server_name[2]
-        if len(self.server_name) == 4:
-            res['port'] = int(self.server_name[3])
-        return res
-
-    def _nc_connect(self, nc_args):
+    def _nc_connect(self):
+        from pwnlib.tubes.remote import remote
         try:
-            return remote(nc_args['host'], nc_args['port'])
-        except:
-            print("Connention to netcat failed.")
+            return remote(self.ip_port['host'], self.ip_port['port'])
+        except BaseException as e:
+            print("Connention to netcat failed: ")
+            print e
             exit(1)
 
-    def _ssh_connect(self, ssh_args):
+    def _ssh_connect(self):
+        from pwnlib.tubes.ssh import ssh
         try:
-            return ssh(ssh_args['username'], ssh_args['host'], ssh_args['port'], ssh_args['passwd'])
-        except:
-            print("Connection to ssh failed")
+            return ssh(self.username, self.ip_port['host'], self.ip_port['port'], self.password)
+        except BaseException as e:
+            print("Connection to ssh failed: ")
+            print e
             exit(1)
 
     def connect(self):
         if self.method == 'nc':
-            return self._nc_connect(self._nc_parse())
+            return self._nc_connect()
         elif self.method == 'ssh':
-            return self._ssh_connect(self._ssh_parse())
+            return self._ssh_connect()
         else:
             return None

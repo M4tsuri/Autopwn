@@ -14,6 +14,7 @@ class Attack(autopwn.core.classes.Autopwn):
     def __init__(self, argv, config):
         autopwn.core.classes.Autopwn.__init__(self)
         self.mode = argv[1]
+        self.log = 'debug'
         self.config = config
         self.execute = 0
         self.server = 0
@@ -21,8 +22,8 @@ class Attack(autopwn.core.classes.Autopwn):
     
     # 启动进程
     def process_init(self):
-        context.arch = self.config['arch']
-        context.log_level = 'debug'
+        context.arch = self.elf.get_machine_arch()
+        context.log_level = self.log
         if self.mode == 'debug' or self.mode == 'run':
             if not os.path.exists(self.config['elf']):
                 print("ELF file does not exist.")
@@ -34,7 +35,7 @@ class Attack(autopwn.core.classes.Autopwn):
                 wait_for_debugger(self.execute.pid)
 
         elif self.mode == 'remote':
-            self.server = autopwn.Server(self.config['server'], self.config['class'])
+            self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
             try:
                 self.execute = self.server.connect()
             except exception.PwnlibException:

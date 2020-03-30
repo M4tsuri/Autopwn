@@ -14,7 +14,7 @@ def parse_config():
 
 def go(argv, exp, get_flag):
     config = parse_config()
-    if config['class'] == 'ctf':
+    if config['mode'] == 'ctf':
         from autopwn.ctf import attack
         ao = attack.Attack(argv=argv, config=config)
         a = ao.process_init()
@@ -24,7 +24,7 @@ def go(argv, exp, get_flag):
         flag = ao.get_flag(a)
         print flag
 
-    elif config['class'] == 'awd':
+    elif config['mode'] == 'awd':
         from autopwn.awd import attack
         a = attack.Attack()
         setattr(attack.Attack, 'exp', exp)
