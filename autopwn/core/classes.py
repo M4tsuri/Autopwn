@@ -1,6 +1,7 @@
+import re
+
 class Autopwn:
     def __init__(self):
-        self.flag_pattern = re.compile(flag_pattern)
         pass
 
     def exp(self):
@@ -14,7 +15,7 @@ class Server:
         self.server_name = server_name
         self.method = server_class
 
-    # 解析nc连接地址及端口
+    # parse nc address and port
     def _nc_parse(self):
         res = {
             'host': '',
@@ -25,7 +26,7 @@ class Server:
         res['port'] = int(self.server_name[1])
         return res
 
-    # ssh格式为用户名:地址:密码:端口
+    # format is username:address:password:port
     def _ssh_parse(self):
         res = {
             'username': '',

@@ -5,10 +5,10 @@ import re
 # this module aims to add new methods to tube class.
 
 def add_features(src):
-    src.extnum = MethodType(extnum, src)
+    src.extnum = classmethod(extnum)
 
 # extract numbers with a given base from an output line
-def extnum(base = 10):  
+def extnum(self, base = 10):  
     res = []
     if base == 10:
         pattern = re.compile(r'\d+')
