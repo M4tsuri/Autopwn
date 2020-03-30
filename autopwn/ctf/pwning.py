@@ -4,14 +4,12 @@ import sys
 import re
 import os
 import yaml
-sys.path.append(os.getcwd())
-sys.path.append('/root/.pyenv/versions/pwnenv/lib/python2.7/site-packages')
-
 
 # 0 represents debug
 # 1 represents process
 # 2 represents remote
-class Pwning:
+class Autopwn:
+    # directly pass argv when you call it, and use out special function
     def __init__(self, argv, conf_file):
         self.mode = int(argv[1])
         self.elf_file = ''
@@ -109,3 +107,5 @@ class RemoteServer:
             return self._ssh_connect(self._ssh_parse())
         else:
             return None
+
+
