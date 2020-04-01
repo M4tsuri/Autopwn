@@ -25,10 +25,10 @@ def go(argv, exp, get_flag):
         print flag
 
     elif config['mode'] == 'awd':
-        from autopwn.awd import attack
-        a = attack.Attack()
-        setattr(attack.Attack, 'exp', exp)
-        setattr(attack.Attack, 'get_flag', get_flag)
+        from autopwn.awd import attacker
+        a = attacker.Attacker()
+        setattr(attacker.Attacker, 'exp', exp)
+        setattr(attacker.Attacker, 'get_flag', get_flag)
         a.run()
 
     else:

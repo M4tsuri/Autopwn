@@ -1,1 +1,1 @@
-__all__ = ['main', 'stack']
+__all__ = ['attacker', 'attack'. 'get_ip']

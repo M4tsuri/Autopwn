@@ -30,12 +30,16 @@ class Attack(autopwn.core.classes.Autopwn):
                 print("ELF file does not exist.")
                 exit(1)
 
-            self.execute = process(['./' + self.config['elf']])
-
             if self.mode == 'ida':
+                self.execute = process(['./' + self.config['elf']])
                 wait_for_debugger(self.execute.pid)
             elif self.mode == 'gdb':
-                gdb.attach(self.execute)
+                context.terminal = ['terminator', '-e']
+                gdbscript = '''
+                b main
+                continue
+                '''
+                self.execute = gdb.debug(['./' + self.config['elf']], gdbscript)
 
         elif self.mode == 'remote':
             self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
@@ -47,5 +51,5 @@ class Attack(autopwn.core.classes.Autopwn):
         else:
             print("Parameter Error.")
 
-        self.execute = autopwn.ctf.less_tube.add_features(self.execute)
+        elf.execute = autopwn.ctf.less_tube.add_features(self.execute)
         return self.execute
