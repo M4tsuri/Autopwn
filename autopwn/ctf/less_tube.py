@@ -1,4 +1,3 @@
-import autopwn.ctf.pwning
 import re
 import pwnlib
 
