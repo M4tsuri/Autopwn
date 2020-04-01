@@ -8,16 +8,27 @@ Autopwn项目，致力于提供如下特性：
 
 ```
 .
-|-- __init__.py
-|-- awd                AWD框架
-|   |-- __init__.py
-|   |-- attack.py      批量攻击主模块（用于统筹）
-|   |-- attacker.py    攻击主模块（用于执行攻击）
-|   `-- get_ip.py      获取靶机IP
-|-- ctf                CTF框架
-|   |-- __init__.py    
-|   |-- less_tube.py   添加tube类方法
-|   |-- pwning.py      主模块
-|   `-- stack.py       可视化栈结构
-`-- exp                序列化攻击流程
+├── \
+├── autopwn
+│   ├── awd
+│   │   ├── attacker.py           # run exp to get shell on each target
+│   │   ├── attack.py             # core module
+│   │   ├── get_ip.py             # get target list
+│   │   └── __init__.py
+│   ├── core
+│   │   ├── classes.py            # core classes like remote server
+│   │   ├── __init__.py
+│   │   └── pwn.py                # entrypoint of the whole framework
+│   ├── ctf
+│   │   ├── attack.py             # entrypoint for ctf framework
+│   │   ├── __init__.py
+│   │   ├── less_tube.py          # add more custom features for the tube class
+│   │   └── stack.py              # visualization tool for stack
+│   └── __init__.py
+├── autopwn.conf                  # config file template
+├── gen.py                        # script to generate config file
+├── README.md
+└── test
+    ├── flag
+    └── payload.py
 ```

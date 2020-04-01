@@ -6,9 +6,9 @@ import autopwn.core.classes
 from pwn import *
 import autopwn.ctf.less_tube
 
-# 0 represents debug
-# 1 represents run
-# 2 represents remote
+# ida: use ida as debugger
+# gdb: use gdb as debugger
+# 
 
 class Attack(autopwn.core.classes.Autopwn):
     # directly pass argv when you call it, and use out special function
@@ -25,15 +25,17 @@ class Attack(autopwn.core.classes.Autopwn):
     def process_init(self):
         context.arch = self.elf.get_machine_arch()
         context.log_level = self.log
-        if self.mode == 'debug' or self.mode == 'run':
+        if self.mode == 'ida' or self.mode == 'run' or self.mode == 'gdb':
             if not os.path.exists(self.config['elf']):
                 print("ELF file does not exist.")
                 exit(1)
 
             self.execute = process(['./' + self.config['elf']])
 
-            if self.mode == 'debug':
+            if self.mode == 'ida':
                 wait_for_debugger(self.execute.pid)
+            elif self.mode == 'gdb':
+                gdb.attach(self.execute)
 
         elif self.mode == 'remote':
             self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
