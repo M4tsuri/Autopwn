@@ -6,24 +6,25 @@ import pwnlib
 # config = {
 #   'server_class': nc or ssh,
 #   'flag_pattern': regex which  flag matches,
-#   'flag_server': {
+#   'flag': {
 #       'ip': flag server ip,
 #       'port': port,
 #       'proto': proto,
+#       'team': team
 #   },
-#   'team': team name,
 # }
 
 class Attacker:
-    def __init__(self, config, exp, get_flag):
-        self.flag_ip = config['flag_server']['ip']
-        self.flag_port = config['flag_server']['port']
-        self.flag_proto = config['flag_server']['proto']
-        self.team = config['team']
+    def __init__(self, config):
+        self.flag_addr = config['flag']['addr']
+        self.token = config['flag']['tokens']
+        self.team = config['flag']['team']
         self.server_class = config['server_class']
-        self.flag_pattern = re.compile(config['flag_pattern'])
-        self.exp = exp
-        self.get_flag = get_flag
+
+    def run(self, argv, qes):
+        if argv[1] == 'self':
+            self.targets
+        self.targets.apply(self.attacker, axis=1)
 
     def attacker(self, target):
         if (execute = connector(self.server_class), target) == NULL:  # check connection to server

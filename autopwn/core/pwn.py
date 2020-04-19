@@ -12,8 +12,9 @@ def parse_config():
         print "Fatal: Configure File Not Found"
         exit(1)
 
-def go(argv, exp, get_flag):
+def go(argv, exp, get_flag, submit=None, targets=None, qes=None):
     config = parse_config()
+    
     if config['mode'] == 'ctf':
         from autopwn.ctf import attack
         ao = attack.Attack(argv=argv, config=config)
@@ -25,11 +26,14 @@ def go(argv, exp, get_flag):
         print flag
 
     elif config['mode'] == 'awd':
+        assert submit != None && targets != None && qes != None
         from autopwn.awd import attacker
-        a = attacker.Attacker()
+        a = attacker.Attacker(config)
+        setattr(attacker.Attacker, 'targets', targets)
+        setattr(attacker.Attacker, 'submit', submit)
         setattr(attacker.Attacker, 'exp', exp)
         setattr(attacker.Attacker, 'get_flag', get_flag)
-        a.run()
+        a.run(argv=argv, qes=qes)
 
     else:
         print "Fatal: Wrong Competation Class."
