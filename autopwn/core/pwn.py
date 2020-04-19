@@ -36,4 +36,4 @@ def go(argv, exp, get_flag, submit=None, targets=None, qes=None):
         a.run(argv=argv, qes=qes)
 
     else:
-        print "Fatal: Wrong Competation Class."
+        print "Fatal: Wrong Competition Class."
