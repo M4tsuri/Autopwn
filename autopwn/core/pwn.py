@@ -26,7 +26,7 @@ def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
     a.run(argv=argv, qes=qes)
 
 
-def ctf(argv, exp=None, get_flag=None):
+def ctf(argv, exp=None, get_flag=None, bp=None):
     config = parse_config()
 
     assert (exp != None and get_flag != None)
@@ -35,6 +35,8 @@ def ctf(argv, exp=None, get_flag=None):
     setattr(attack.Attack, 'exp', exp)
     setattr(attack.Attack, 'get_flag', get_flag)
     ao = attack.Attack(argv=argv, config=config)
+    if bp:
+        ao.breakat(bp)
     a = ao.process_init()
     
     ao.exp(a)

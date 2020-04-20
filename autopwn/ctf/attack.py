@@ -24,6 +24,18 @@ class Attack(autopwn.core.classes.Autopwn):
                 continue
                 '''
         context.terminal = ['terminator', '-e']
+
+    def breakat(self, breakpoint):
+        if self.elf.pie:
+            self.gdbscript = '''
+                    b *$rebase({})
+                    continue
+                    '''.format(hex(breakpoint))
+        else:
+            self.gdbscript = '''
+                    b *{}
+                    continue
+                    '''.format(hex(breakpoint))
     
     # 启动进程
     def process_init(self):
