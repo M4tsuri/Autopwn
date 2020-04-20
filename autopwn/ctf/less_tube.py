@@ -14,8 +14,8 @@ def add_features(src):
 def verify_valid(self, func, **kwargs):
     try:
         return func(self, kwargs)
-    except PwnlibException as e:
-        log.exception("Error: " + e.message)
+    except EOFError:
+        self.exception("Error: EOFError")
         return None
 
 

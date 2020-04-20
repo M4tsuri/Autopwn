@@ -13,30 +13,30 @@ def parse_config():
         log.error("Fatal: Configure File Not Found")
         exit(1)
 
-def go(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
+def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
     config = parse_config()
+
+    assert (exp != None and get_flag != None and submit != None and targets != None and qes != None)
+    from autopwn.awd import attacker
+    a = attacker.Attacker(config)
+    setattr(attacker.Attacker, 'targets', targets)
+    setattr(attacker.Attacker, 'submit', submit)
+    setattr(attacker.Attacker, 'exp', exp)
+    setattr(attacker.Attacker, 'get_flag', get_flag)
+    a.run(argv=argv, qes=qes)
+
+
+def ctf(argv, exp=None, get_flag=None):
+    config = parse_config()
+
+    assert (exp != None and get_flag != None)
+    from autopwn.ctf import attack
+    assert exp != None and get_flag != None
+    setattr(attack.Attack, 'exp', exp)
+    setattr(attack.Attack, 'get_flag', get_flag)
+    ao = attack.Attack(argv=argv, config=config)
+    a = ao.process_init()
     
-    if config['mode'] == 'ctf':
-        from autopwn.ctf import attack
-        assert exp != None and get_flag != None
-        setattr(attack.Attack, 'exp', exp)
-        setattr(attack.Attack, 'get_flag', get_flag)
-        ao = attack.Attack(argv=argv, config=config)
-        a = ao.process_init()
-        
-        ao.exp(a)
-        flag = ao.get_flag(a)
-        a.success(flag)
-
-    elif config['mode'] == 'awd':
-        assert (submit != None and targets != None and qes != None)
-        from autopwn.awd import attacker
-        a = attacker.Attacker(config)
-        setattr(attacker.Attacker, 'targets', targets)
-        setattr(attacker.Attacker, 'submit', submit)
-        setattr(attacker.Attacker, 'exp', exp)
-        setattr(attacker.Attacker, 'get_flag', get_flag)
-        a.run(argv=argv, qes=qes)
-
-    else:
-        log.error("Fatal: Wrong Competition Class.")
+    ao.exp(a)
+    flag = ao.get_flag(a)
+    a.success(flag)
