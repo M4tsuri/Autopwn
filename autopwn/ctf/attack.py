@@ -13,13 +13,17 @@ import autopwn.ctf.less_tube
 class Attack(autopwn.core.classes.Autopwn):
     # directly pass argv when you call it, and use out special function
     def __init__(self, argv, config):
-        autopwn.core.classes.Autopwn.__init__(self)
         self.mode = argv[1]
         self.log = 'debug'
         self.config = config
         self.execute = 0
         self.server = 0
         self.elf = ELF(config['elf'])
+        self.gdbscript = '''
+                b main
+                continue
+                '''
+        context.terminal = ['terminator', '-e']
     
     # 启动进程
     def process_init(self):
@@ -27,19 +31,16 @@ class Attack(autopwn.core.classes.Autopwn):
         context.log_level = self.log
         if self.mode == 'ida' or self.mode == 'run' or self.mode == 'gdb':
             if not os.path.exists(self.config['elf']):
-                print("ELF file does not exist.")
+                log.error("ELF file does not exist.")
                 exit(1)
 
             if self.mode == 'ida':
                 self.execute = process(['./' + self.config['elf']])
                 wait_for_debugger(self.execute.pid)
             elif self.mode == 'gdb':
-                context.terminal = ['terminator', '-e']
-                gdbscript = '''
-                b main
-                continue
-                '''
-                self.execute = gdb.debug(['./' + self.config['elf']], gdbscript)
+                self.execute = gdb.debug(['./' + self.config['elf']], self.gdbscript)
+            else:
+                self.execute = process(['./' + self.config['elf']])
 
         elif self.mode == 'remote':
             self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
@@ -51,5 +52,5 @@ class Attack(autopwn.core.classes.Autopwn):
         else:
             print("Parameter Error.")
 
-        elf.execute = autopwn.ctf.less_tube.add_features(self.execute)
+        self.execute = autopwn.ctf.less_tube.add_features(self.execute)
         return self.execute

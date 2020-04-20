@@ -1,13 +1,11 @@
 import re
 
-class Autopwn:
-    def __init__(self):
+class Autopwn(object):
+
+    def exp(self, a):
         pass
 
-    def exp(self):
-        pass
-
-    def get_flag(self):
+    def get_flag(self, a):
         pass
 
 class Server:
