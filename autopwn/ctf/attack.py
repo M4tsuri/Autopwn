@@ -3,8 +3,10 @@ from pwnlib.util.proc import wait_for_debugger
 import sys
 import re
 import autopwn.core.classes
-from pwn import *
 import autopwn.ctf.less_tube
+import lief
+import os
+from pwn import *
 
 # ida: use ida as debugger
 # gdb: use gdb as debugger
@@ -12,18 +14,63 @@ import autopwn.ctf.less_tube
 
 class Attack(autopwn.core.classes.Autopwn):
     # directly pass argv when you call it, and use out special function
-    def __init__(self, argv, config):
+    def __init__(self, argv, config, inter, needed):
         self.mode = argv[1]
         self.log = 'debug'
         self.config = config
         self.execute = 0
         self.server = 0
         self.elf = ELF(config['elf'])
+
         self.gdbscript = '''
                 b main
                 continue
                 '''
         context.terminal = ['terminator', '-e']
+
+        self.parsed = 0
+        self.ensured = False
+        if needed:
+            self.lib = [ELF('./' + lib) for lib in needed]
+        if inter:
+            self.lib.append(ELF("./" + inter))
+        self.needed = needed
+        self.inter = inter
+        self.realpath = os.path.abspath(argv[0])[:-(len(argv[0]))]
+
+    def parse(self):
+        self.parsed = lief.parse('./' + self.config['elf'])
+        assert type(self.parsed) != type(0)
+        return self.parsed
+
+    def ensurelib(self, inter=None, needed=None):
+        if self.ensured:
+            return
+
+        if not self.parsed:
+            self.parse()
+
+        elf = self.realpath + self.config['elf']
+        exit_value = 0
+        if self.inter:
+            inter = self.realpath + self.inter
+            command = "patchelf --set-interpreter {} {}".format(inter, elf)
+            log.info("Executing: " + command)
+            exit_value = os.system(command)
+        if needed:
+            lib_pattern = re.compile(r"lib[a-zA-Z]+")
+            for origin in self.parsed.libraries:
+                for replace in self.needed:
+                    self.lib.append(ELF(replace))
+                    if re.findall(lib_pattern, origin)[0] == re.findall(lib_pattern, replace)[0]:
+                        replace_path = self.realpath + replace
+                        command = "patchelf --replace-needed {} {} {}".format(origin, replace_path, elf)
+                        log.info("Executing: " + command)
+                        exit_value += os.system(command)
+
+        self.elf = ELF(self.config['elf'])
+        self.ensured = True
+        return exit_value
 
     def breakat(self, breakpoint):
         if self.elf.pie:
@@ -46,13 +93,12 @@ class Attack(autopwn.core.classes.Autopwn):
                 log.error("ELF file does not exist.")
                 exit(1)
 
-            if self.mode == 'ida':
-                self.execute = process(['./' + self.config['elf']])
-                wait_for_debugger(self.execute.pid)
-            elif self.mode == 'gdb':
+            if self.mode == 'gdb':
                 self.execute = gdb.debug(['./' + self.config['elf']], self.gdbscript)
             else:
                 self.execute = process(['./' + self.config['elf']])
+            if self.mode == 'ida':
+                wait_for_debugger(self.execute.pid)
 
         elif self.mode == 'remote':
             self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
