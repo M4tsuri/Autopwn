@@ -43,7 +43,17 @@ class Attack(autopwn.core.classes.Autopwn):
         assert type(self.parsed) != type(0)
         return self.parsed
 
-    def ensurelib(self, inter=None, needed=None):
+    # path[0] is absolute path
+    # path[1] is dirtionary
+    # path[2] is file name
+    @staticmethod
+    def parse_path(path):
+        res = []
+        res.append(os.path.abspath(path))
+        res.append(os.path.basename(path))
+        return res
+
+    def ensurelib(self):
         if self.ensured:
             return
 
@@ -53,18 +63,23 @@ class Attack(autopwn.core.classes.Autopwn):
         elf = self.realpath + self.config['elf']
         exit_value = 0
         if self.inter:
-            inter = self.realpath + self.inter
-            command = "patchelf --set-interpreter {} {}".format(inter, elf)
+            inter = self.parse_path(self.inter)
+            command = "patchelf --set-interpreter {} {}".format(inter[0], elf)
             log.info("Executing: " + command)
             exit_value = os.system(command)
-        if needed:
+        
+        if self.needed:
+            needed = []
+            for replace in self.needed:
+                needed.append(self.parse_path(replace))
+            print needed
+            
             lib_pattern = re.compile(r"lib[a-zA-Z]+")
             for origin in self.parsed.libraries:
-                for replace in self.needed:
-                    self.lib.append(ELF(replace))
-                    if re.findall(lib_pattern, origin)[0] == re.findall(lib_pattern, replace)[0]:
-                        replace_path = self.realpath + replace
-                        command = "patchelf --replace-needed {} {} {}".format(origin, replace_path, elf)
+                for replace in needed:
+                    self.lib.append(ELF(replace[0]))
+                    if re.findall(lib_pattern, origin)[0] == re.findall(lib_pattern, replace[1])[0]:
+                        command = "patchelf --replace-needed {} {} {}".format(origin, replace[0], elf)
                         log.info("Executing: " + command)
                         exit_value += os.system(command)
 

@@ -39,7 +39,7 @@ def ctf(argv, exp=None, get_flag=None, bp=None, inter=None, needed=None):
     if bp:
         ao.breakat(bp)
     if argv[1] == 'patch' and (inter or needed):
-        if not ao.ensurelib(inter=inter, needed=needed):
+        if not ao.ensurelib():
             log.success("ELF File Modified.")
         else:
             log.failure("ELF File Modifying Failed.")
