@@ -5,7 +5,7 @@ from pwn import *
 # this module aims to add new methods to tube class.
 
 def add_features(src):
-    features = [extnum, l64, l32, sla, sa, lg, se, sl, ru, rl, verify_valid]
+    features = [extnum, l64, l32, sla, sa, lg, se, sl, ru, rl, verify_valid, polling]
     for feature in features:
         setattr(pwnlib.tubes.tube.tube, feature.func_name, feature)
     assert type(src) != int
@@ -17,6 +17,16 @@ def verify_valid(self, func, **kwargs):
     except EOFError:
         self.exception("Error: EOFError")
         return None
+
+def polling(self, templates=None, count=0):
+    assert templates != None
+    if count == 1:
+        self.recvuntil(templates[0])
+        self.sendline(templates[1])
+        return
+    for template in templates:
+        self.recvuntil(template[0])
+        self.sendline(template[1])
 
 
 def l64(self):
