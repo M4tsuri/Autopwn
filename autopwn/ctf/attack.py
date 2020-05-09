@@ -31,7 +31,7 @@ class Attack(autopwn.core.classes.Autopwn):
         self.parsed = 0
         self.ensured = False
         if needed:
-            self.lib = [ELF('./' + lib) for lib in needed]
+            self.lib = [ELF(os.path.abspath(lib)) for lib in needed]
         if inter:
             self.lib.append(ELF("./" + inter))
         self.needed = needed
