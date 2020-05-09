@@ -19,22 +19,22 @@ Autopwn项目，致力于提供如下特性：
 ## 效果图
 
 - 自动生成配置文件
-![](https://github.com/CTSinon/Autopwn/blob/master/example/autoconf.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autoconf.gif)
 
 - 搭配emacs的YASnippet插件一键生成exp框架
-![](https://github.com/CTSinon/Autopwn/blob/master/example/genexp.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/genexp.gif)
 
 - 一键patchelf
-![](https://github.com/CTSinon/Autopwn/blob/master/example/autopatch.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autopatch.gif)
 
 - 自带常用tube方法别名（如rl，sl，ru），一键运行（废话
-![](https://github.com/CTSinon/Autopwn/blob/master/example/run.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/run.gif)
 
 - 无视PIE，自定义断点，一键调试
-![](https://github.com/CTSinon/Autopwn/blob/master/example/breakpoint.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/breakpoint.gif)
 
 - 一键远程连接
-![](https://github.com/CTSinon/Autopwn/blob/master/example/remote.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/remote.gif)
 
 ## 安装
 
@@ -57,6 +57,16 @@ Autopwn项目，致力于提供如下特性：
 4. 将LIBC文件夹中的ubuntu库放到你喜欢的位置
 
 5. enjoy it!
+
+### 关于lief模块的安装
+
+lief官方已经在最新版的lief中抛弃了对python 2.7的支持，因此我们需要一个旧版本，在这里你可以下载到旧版本的egg包：
+
+https://github.com/lief-project/LIEF/releases/download/0.9.0/lief-0.9.0-py2.7-linux.egg
+
+然后使用easy_install来安装即可：
+
+`easy_install lief-0.9.0-py2.7-linux.egg`
 
 ## 其他
 
