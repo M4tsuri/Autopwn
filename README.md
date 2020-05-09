@@ -31,7 +31,7 @@ Autopwn项目，致力于提供如下特性：
 ![](https://github.com/CTSinon/Autopwn/blob/master/example/run.gif)
 
 - 无视PIE，自定义断点，一键调试
-![](https://github.com/CTSinon/Autopwn/blob/master/example/autoconf.gif)
+![](https://github.com/CTSinon/Autopwn/blob/master/example/breakpoint.gif)
 
 - 一键远程连接
 ![](https://github.com/CTSinon/Autopwn/blob/master/example/remote.gif)
