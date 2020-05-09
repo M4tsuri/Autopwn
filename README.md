@@ -19,19 +19,22 @@ Autopwn项目，致力于提供如下特性：
 ## 效果图
 
 - 自动生成配置文件
-
+![](https://github.com/CTSinon/Autopwn/blob/master/example/autoconf.gif)
 
 - 搭配emacs的YASnippet插件一键生成exp框架
-
+![](https://github.com/CTSinon/Autopwn/blob/master/example/genexp.gif)
 
 - 一键patchelf
+![](https://github.com/CTSinon/Autopwn/blob/master/example/autopatch.gif)
 
-- 自带常用tube方法别名（如rl，sl，ru），一键运行
+- 自带常用tube方法别名（如rl，sl，ru），一键运行（废话
+![](https://github.com/CTSinon/Autopwn/blob/master/example/run.gif)
 
 - 无视PIE，自定义断点，一键调试
+![](https://github.com/CTSinon/Autopwn/blob/master/example/autoconf.gif)
 
 - 一键远程连接
-
+![](https://github.com/CTSinon/Autopwn/blob/master/example/remote.gif)
 
 ## 安装
 
@@ -146,5 +149,5 @@ pwn.ctf(argv, exp, get_flag,
 ```
 
 ### 碎碎念
-
-作者没有专业研究过python这门语言，所以脚本写得一眼难尽。设计模式之类的更是没怎么研究过。希望各路大神能提出更好的建议，添加更方便的功能，大家一起进步呀 (๑•̀ㅂ•́)و✧ 
+- 感谢cnitlrt师傅的支持
+- 作者没有专业研究过python这门语言，所以脚本写得一眼难尽。设计模式之类的更是没怎么研究过。希望各路大神能提出更好的建议，添加更方便的功能，大家一起进步呀 (๑•̀ㅂ•́)و✧ 
