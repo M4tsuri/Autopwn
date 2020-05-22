@@ -72,13 +72,14 @@ class Attack(autopwn.core.classes.Autopwn):
             needed = []
             for replace in self.needed:
                 needed.append(self.parse_path(replace))
-            print needed
+            #print needed
             
             lib_pattern = re.compile(r"lib[a-zA-Z]+")
             for origin in self.parsed.libraries:
                 for replace in needed:
                     self.lib.append(ELF(replace[0]))
-                    if re.findall(lib_pattern, origin)[0] == re.findall(lib_pattern, replace[1])[0]:
+                    #print re.findall(lib_pattern, origin)[0]
+                    if re.findall(lib_pattern, replace[1])[0] in origin:
                         command = "patchelf --replace-needed {} {} {}".format(origin, replace[0], elf)
                         log.info("Executing: " + command)
                         exit_value += os.system(command)
