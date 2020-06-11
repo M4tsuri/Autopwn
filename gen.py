@@ -41,19 +41,19 @@ def parse_opt():
         config["server_class"] = 'nc'
 
 def help():
-    print "help: "
-    print " -f filename            must specify without -a"
-    print " -m mode                choose between ctf and awd"
-    print " -r ip address          ip address of remote server"
-    print " -c connect method      now you can choose ssh or nc"
-    print " -u username            if you choose ssh"
-    print " -p password            if you choose ssh"
-    print " -a                     update conf"
+    print("help: ")
+    print(" -f filename            must specify without -a")
+    print(" -m mode                choose between ctf and awd")
+    print(" -r ip address          ip address of remote server")
+    print(" -c connect method      now you can choose ssh or nc")
+    print(" -u username            if you choose ssh")
+    print(" -p password            if you choose ssh")
+    print(" -a                     update conf")
     exit(1)
 
 
 def no_parameter():
-    print "Fatal: Parameter Not Specified."
+    print("Fatal: Parameter Not Specified.")
     exit(1)
 
 
@@ -64,7 +64,7 @@ def check_file(elf_name):
         elf = base_dir + '/' + elf_name
         shutil.move(elf, now_dir + '/' + elf_name)
     else:
-        print "Fatal: No Such File."
+        print("Fatal: No Such File.")
         exit(1)
     config['elf'] = elf_name
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     try:
         config = yaml.load(open(conf_path, 'r'), Loader=yaml.FullLoader)
     except IOError:
-        print "Fatal: Template File Not Found."
+        print("Fatal: Template File Not Found.")
 
     parse_opt()
     os.chmod(config['elf'], 0o775)

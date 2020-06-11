@@ -9,7 +9,7 @@ class Autopwn(object):
         pass
 
 class Server:
-    def __init__(self, server_info, server_class):
+    def __init__(self, server_info: dict, server_class: str):
         self.ip_port = self._ip_parse(server_info["ip_port"])
         self.username = server_info['username']
         self.password = server_info['password']
@@ -17,7 +17,7 @@ class Server:
 
     # parse nc address and port
     @staticmethod
-    def _ip_parse(ip_port):
+    def _ip_parse(ip_port: str):
         res = {
             'host': '',
             'port': 0
@@ -32,8 +32,7 @@ class Server:
         try:
             return remote(self.ip_port['host'], self.ip_port['port'])
         except BaseException as e:
-            print("Connention to netcat failed: ")
-            print e
+            print("Connention to netcat failed: " + str(e))
             exit(1)
 
     def _ssh_connect(self):
@@ -41,8 +40,7 @@ class Server:
         try:
             return ssh(self.username, self.ip_port['host'], self.ip_port['port'], self.password)
         except BaseException as e:
-            print("Connection to ssh failed: ")
-            print e
+            print("Connection to ssh failed: " + str(e))
             exit(1)
 
     def connect(self):

@@ -10,7 +10,7 @@ def parse_config():
         with open("autopwn.conf") as config_file:
             config = yaml.load(config_file, Loader=yaml.FullLoader)
             return config
-    except IOError:
+    except EnvironmentError:
         log.error("Fatal: Configure File Not Found")
         exit(1)
 
@@ -29,8 +29,12 @@ def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
 
 def ctf(argv, exp=None, get_flag=None, bp=None, inter=None, needed=None):
     config = parse_config()
+    # parse configuration file
 
-    assert (exp != None and get_flag != None)
+    if exp == None or get_flag == None:
+        log.error("Exp or Get_flag function not provided.")
+        exit(1)
+    
     from autopwn.ctf import attack
     setattr(attack.Attack, 'exp', exp)
     setattr(attack.Attack, 'get_flag', get_flag)

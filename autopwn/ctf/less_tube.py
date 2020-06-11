@@ -7,7 +7,7 @@ from pwn import *
 def add_features(src):
     features = [extnum, l64, l32, sla, sa, lg, se, sl, ru, rl, verify_valid, polling]
     for feature in features:
-        setattr(pwnlib.tubes.tube.tube, feature.func_name, feature)
+        setattr(pwnlib.tubes.tube.tube, feature.__name__, feature)
     assert type(src) != int
     return src
 

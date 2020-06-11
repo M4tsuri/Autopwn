@@ -15,9 +15,9 @@ class Csu64:
             self.rbp = count
         payload = p64(self.addr)
         payload += p64(0) + p64(self.rbp)
-        payload += p64(self.target)
         payload += p64(self.edi) + p64(self.rsi)
         payload += p64(self.rdx)
+        payload += p64(self.target)
         payload += p64(self.addr - 0x1a)
 
         return payload
@@ -87,6 +87,6 @@ class Chunk:
             stop = self.SIZE_SZ * key.stop
             return string[start:stop]
         else:
-            print "Not Supported."
+            print("Not Supported.")
             return None
         
