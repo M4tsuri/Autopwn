@@ -83,16 +83,10 @@ class Attack(autopwn.core.classes.Autopwn):
         return exit_value
 
     def breakat(self, breakpoint):
-        if self.elf.pie:
-            self.gdbscript = '''
-                    b *$rebase({})
-                    continue
-                    '''.format(hex(breakpoint))
-        else:
-            self.gdbscript = '''
-                    b *{}
-                    continue
-                    '''.format(hex(breakpoint))
+        self.gdbscript = '''
+            b *{}
+            continue
+            '''.format(f"$rebase({hex(breakpoint)})" if self.elf.pie else format(hex(breakpoint)))
     
     # 启动进程
     def process_init(self):
@@ -100,7 +94,7 @@ class Attack(autopwn.core.classes.Autopwn):
         context.log_level = self.log_level
         if self.mode == 'ida' or self.mode == 'run' or self.mode == 'gdb':
             if not self.elf_path.exists():
-                log_level.error("ELF file does not exist.")
+                log.error("ELF file does not exist.")
                 exit(1)
 
             if self.mode == 'gdb':
@@ -115,10 +109,10 @@ class Attack(autopwn.core.classes.Autopwn):
             try:
                 self.execute = self.server.connect()
             except exception.PwnlibException:
-                print("Remote server error.")
+                log.error("Remote server error.")
 
         else:
-            print("Parameter Error.")
+            log.error("Parameter Error.")
 
         self.execute = autopwn.ctf.less_tube.add_features(self.execute)
         return self.execute

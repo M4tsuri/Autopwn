@@ -48,10 +48,9 @@ def sa(self, after, send):
                              after=after,
                              send=send)
 
-def lg(self, message, data):
-    return self.verify_valid(lambda ex, args: ex.success(args['message'] + ": 0x%x" % args['data']),
-                             message=message,
-                             data=data)
+def lg(self, message):
+    return self.verify_valid(lambda ex, args: ex.success(args['message']),
+                             message=message)
 
 def se(self, payload):
     return self.verify_valid(lambda ex, args: ex.send(args['payload']), payload=payload)
