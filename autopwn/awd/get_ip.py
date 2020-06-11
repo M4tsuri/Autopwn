@@ -25,8 +25,3 @@ def add_form_txt(path):  # add target list from a txt file
         res = pandas.Series(res, name="target")
         res = res.apply(check_valid)
         return res
-
-        
-
-    
-            
