@@ -7,6 +7,7 @@ import autopwn.ctf.less_tube
 import lief
 from pwn import *
 from pathlib import Path
+import itertools
 
 # ida: use ida as debugger
 # gdb: use gdb as debugger
@@ -34,26 +35,26 @@ class Attack(autopwn.core.classes.Autopwn):
         # the server to be connected when using remote mode
 
         self.work_path = Path(argv[0]).parent
-        self.elf_path = Path(config['elf']).absolute()
+        self.elf_path = Path(config['elf']).resolve()
         self.elf = ELF(str(self.elf_path))
 
         self.inter_modified = bool(inter != None)
         self.needed_modified = bool(needed != None)
 
         if self.needed_modified:
-            self.needed_path = [Path(lib).absolute() for lib in needed]
+            self.needed_path = [Path(lib).resolve() for lib in needed]
             self.lib = [ELF(str(lib_path)) for lib_path in self.needed_path]
         if self.inter_modified:
-            self.inter_path = Path(inter).absolute()
+            self.inter_path = Path(inter).resolve()
             self.inter: pwnlib.elf.ELF = ELF(str(self.inter_path))
         
-        self.parsed: lief.Binary = None
+        self.parsed: lief.ELF.Binary = None
         # extend lief support
 
 
     def parse(self):
-        self.parsed = lief.parse(self.elf_path)
-        assert type(self.parsed) == lief.Binary
+        self.parsed = lief.parse(str(self.elf_path))
+        assert type(self.parsed) == lief.ELF.Binary
         return self.parsed
 
 
@@ -64,26 +65,20 @@ class Attack(autopwn.core.classes.Autopwn):
         exit_value = 0
         if self.inter_modified:
             command = f"patchelf --set-interpreter {str(self.inter_path)} {str(self.elf_path)}"
-            log_level.info("Executing: " + command)
+            log.info("Executing: " + command)
             exit_value = os.system(command)
         
         if self.needed_path:
-            needed = []
-            for replace in self.needed_path:
-                needed.append(self.parse_path(replace))
-            #print needed
-            
             lib_pattern = re.compile(r"lib[a-zA-Z]+")
-            for origin in self.parsed.libraries:
-                for replace in needed:
-                    self.lib.append(ELF(replace[0]))
-                    #print re.findall(lib_pattern, origin)[0]
-                    if re.findall(lib_pattern, replace[1])[0] in origin:
-                        command = "patchelf --replace-needed {} {} {}".format(origin, replace[0], elf)
-                        log_level.info("Executing: " + command)
-                        exit_value += os.system(command)
+            origin_path = [Path(lib) for lib in self.parsed.libraries]
 
-        self.elf = ELF(self.config['elf'])
+            for origin, replace in itertools.product(origin_path, self.needed_path):
+                if re.findall(lib_pattern, origin.name)[0] in replace.name:
+                    command = f"patchelf --replace-needed {str(origin)} {str(replace)} {str(self.elf_path)}"
+                    log.info("Executing: " + command)
+                    exit_value += os.system(command)
+
+        self.elf = ELF(str(self.elf_path))
         self.ensured = True
         return exit_value
 
