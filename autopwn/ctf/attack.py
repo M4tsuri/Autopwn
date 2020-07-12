@@ -21,11 +21,7 @@ class Attack(autopwn.core.classes.Autopwn):
         self.log_level = 'debug'
         self.config: dict = config
         # basic configuration
-
-        self.gdbscript = '''
-                b main
-                continue
-                '''
+        
         context.terminal = ['terminator', '-e']
         # debugger configuration
 
@@ -81,12 +77,6 @@ class Attack(autopwn.core.classes.Autopwn):
         self.elf = ELF(str(self.elf_path))
         self.ensured = True
         return exit_value
-
-    def breakat(self, breakpoint):
-        self.gdbscript = '''
-            b *{}
-            continue
-            '''.format(f"$rebase({hex(breakpoint)})" if self.elf.pie else format(hex(breakpoint)))
     
     # 启动进程
     def process_init(self):
@@ -97,10 +87,8 @@ class Attack(autopwn.core.classes.Autopwn):
                 log.error("ELF file does not exist.")
                 exit(1)
 
-            if self.mode == 'gdb':
-                self.execute = gdb.debug([str(self.elf_path)], self.gdbscript)
-            else:
-                self.execute = process([str(self.elf_path)])
+            self.execute = process([str(self.elf_path)])
+
             if self.mode == 'ida':
                 wait_for_debugger(self.execute.pid)
 

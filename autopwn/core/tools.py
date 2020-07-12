@@ -28,6 +28,25 @@ class Csu64:
     def __add__(self, src):
         return bytes(self) + bytes(src)
 
+class Heap:
+    def __init__(self, arch):
+        self.arch = arch
+        
+        self.SIZE_SZ = self.arch / 8
+        # 表示平台字长
+        self.MALLOC_ALIGNMENT = 2 * self.SIZE_SZ
+        # malloc函数分配块的最小单位
+        self.MALLOC_ALIGN_MASK = self.MALLOC_ALIGNMENT - 1
+        # malloc块对齐掩码
+        self.MIN_CHUNK_SIZE = 4 * self.SIZE_SZ
+        # 最小的可能的块大小
+        self.MINSIZE = (self.MIN_CHUNK_SIZE + self.MALLOC_ALIGN_MASK) & (~self.MALLOC_ALIGN_MASK)
+        # 最小块大小
+
+        self.fastbins = Fastbins(arch)
+        self.chunk = Chunk(arch)
+        self.bins = Bins(arch)
+
 class Fastbins(Heap):
     def __init__(self, arch):
         super().__init__(self, arch)
@@ -122,26 +141,6 @@ class Unsortedbins(Heap):
     def __getitem__(self, key):
         pass
 
-class Heap:
-    def __init__(self, arch):
-        self.arch = arch
-        
-        self.SIZE_SZ = self.arch / 8
-        # 表示平台字长
-        self.MALLOC_ALIGNMENT = 2 * self.SIZE_SZ
-        # malloc函数分配块的最小单位
-        self.MALLOC_ALIGN_MASK = self.MALLOC_ALIGNMENT - 1
-        # malloc块对齐掩码
-        self.MIN_CHUNK_SIZE = 4 * self.SIZE_SZ
-        # 最小的可能的块大小
-        self.MINSIZE = (self.MIN_CHUNK_SIZE + self.MALLOC_ALIGN_MASK) & (~self.MALLOC_ALIGN_MASK)
-        # 最小块大小
-
-        self.fastbins = Fastbins(arch)
-        self.chunk = Chunk(arch)
-        self.bins = Bins(arch)
-
-
 class Chunk(Heap):
     def __init__(self, arch):
         super().__init__(self, arch)
@@ -200,3 +199,8 @@ class Chunk(Heap):
             print("Not Supported.")
             return None
         
+def breakat(elf, breakpoint):
+    return '''
+        b *{}
+        continue
+        '''.format(f"$rebase({hex(breakpoint)})" if elf.pie else format(hex(breakpoint)))
