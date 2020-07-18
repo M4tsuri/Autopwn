@@ -3,6 +3,12 @@ from pwnlib.util.packing import pack
 
 ARCH_x64 = 64
 ARCH_x86 = 32
+PREV_INUSE = 1
+PREV_NOT_INUSE = 0
+MMAPPED = 1
+NOT_MMAPPED = 0
+MAIN_ARENA = 0
+NOT_MAIN_ARENA = 1
 
 class Csu64:
     def __init__(self, addr):
@@ -32,7 +38,7 @@ class Heap:
     def __init__(self, arch):
         self.arch = arch
         
-        self.SIZE_SZ = self.arch / 8
+        self.SIZE_SZ = self.arch // 8
         # 表示平台字长
         self.MALLOC_ALIGNMENT = 2 * self.SIZE_SZ
         # malloc函数分配块的最小单位
@@ -43,13 +49,9 @@ class Heap:
         self.MINSIZE = (self.MIN_CHUNK_SIZE + self.MALLOC_ALIGN_MASK) & (~self.MALLOC_ALIGN_MASK)
         # 最小块大小
 
-        self.fastbins = Fastbins(arch)
-        self.chunk = Chunk(arch)
-        self.bins = Bins(arch)
-
 class Fastbins(Heap):
     def __init__(self, arch):
-        super().__init__(self, arch)
+        super().__init__(arch)
         self.MAX_FAST_SIZE = 80 * self.SIZE_SZ / 4
         # 有效的fastbin每个块的最大大小
         self.DEFAULT_MXFAST = 64 * self.SIZE_SZ / 4
@@ -143,10 +145,11 @@ class Unsortedbins(Heap):
 
 class Chunk(Heap):
     def __init__(self, arch):
-        super().__init__(self, arch)
+        super().__init__(arch)
         self.prev_size = 0
         self.size = -1
         self.norm_size = -1
+        self.req_size = -1
         self.A = 0
         self.M = 0
         self.P = 1
@@ -175,10 +178,11 @@ class Chunk(Heap):
         return num
 
     def __bytes__(self):
-        pword = lambda x : pack(x, self.word, 'little', False)
+        pword = lambda x : pack(x, self.SIZE_SZ, 'little', False).ljust(self.SIZE_SZ, b'\x00')
         payload = pword(self.prev_size)
         if self.size == -1:
-            assert self.norm_size >= 0
+            if self.norm_size == -1:
+                self.norm_size = self.request2size(self.req_size)
             self.size = self.setBit(self.norm_size, 0, self.P)
             self.size = self.setBit(self.size, 1, self.M)
             self.size = self.setBit(self.size, 2, self.A)
@@ -196,8 +200,7 @@ class Chunk(Heap):
             stop = self.SIZE_SZ * key.stop
             return byte[start:stop]
         else:
-            print("Not Supported.")
-            return None
+            return self[key:key + 1]
         
 def breakat(elf, breakpoint: list):
     real_addr = lambda addr: f"$rebase({hex(addr)})" if elf.pie else hex(addr)
