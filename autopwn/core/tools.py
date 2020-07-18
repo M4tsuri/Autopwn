@@ -199,8 +199,14 @@ class Chunk(Heap):
             print("Not Supported.")
             return None
         
-def breakat(elf, breakpoint):
-    return '''
-        b *{}
-        continue
-        '''.format(f"$rebase({hex(breakpoint)})" if elf.pie else format(hex(breakpoint)))
+def breakat(elf, breakpoint: list):
+    real_addr = lambda addr: f"$rebase({hex(addr)})" if elf.pie else hex(addr)
+
+    break_str = "b *{}\n"
+    res_str = "\n"
+    for point in breakpoint:
+        res_str += break_str.format(real_addr(point))
+
+    res_str += "continue\n"
+    return res_str
+    

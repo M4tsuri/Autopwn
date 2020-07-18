@@ -22,7 +22,7 @@ class Attack(autopwn.core.classes.Autopwn):
         self.config: dict = config
         # basic configuration
         
-        context.terminal = ['terminator', '-e']
+        context.terminal = ['terminator', '-me']
         # debugger configuration
 
         self.execute: pwnlib.tubes.sock.sock = None
