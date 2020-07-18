@@ -1,3 +1,4 @@
 **.pyc
 .vscode
 .DS_Store
+.gdb_history
