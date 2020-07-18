@@ -19,23 +19,6 @@ Autopwn项目，致力于提供如下特性：
 - 允许用户为当前的elf生成一个可修改的lief Binary对象
 - 添加Ubuntu常用库的数据库（ld，libc，libdl）
 
-## 效果图
-
-- 生成配置文件
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autoconf.gif)
-
-- 搭配emacs的YASnippet插件生成exp框架
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/genexp.gif)
-
-- patchelf
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/autopatch.gif)
-
-- 自带常用tube方法别名（如rl，sl，ru）
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/run.gif)
-
-- 远程连接
-![](https://github.com/CTSinon/Autopwn/blob/master/screenshots/remote.gif)
-
 ## 安装
 
 ### 依赖
