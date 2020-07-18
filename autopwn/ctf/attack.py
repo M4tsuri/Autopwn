@@ -63,19 +63,21 @@ class Attack(autopwn.core.classes.Autopwn):
             command = f"patchelf --set-interpreter {str(self.inter_path)} {str(self.elf_path)}"
             log.info("Executing: " + command)
             exit_value = os.system(command)
-        
-        if self.needed_path:
-            lib_pattern = re.compile(r"lib[a-zA-Z]+")
-            origin_path = [Path(lib) for lib in self.parsed.libraries]
 
-            for origin, replace in itertools.product(origin_path, self.needed_path):
-                if re.findall(lib_pattern, origin.name)[0] in replace.name:
-                    command = f"patchelf --replace-needed {str(origin)} {str(replace)} {str(self.elf_path)}"
-                    log.info("Executing: " + command)
-                    exit_value += os.system(command)
+        if self.needed_path == None:
+            return -1
+        
+        lib_pattern = re.compile(r"lib[a-zA-Z]+")
+        origin_path = [Path(lib) for lib in self.parsed.libraries]
+
+        for origin, replace in itertools.product(origin_path, self.needed_path):
+            if not re.findall(lib_pattern, origin.name)[0] in replace.name:
+                continue
+            command = f"patchelf --replace-needed {str(origin)} {str(replace)} {str(self.elf_path)}"
+            log.info("Executing: " + command)
+            exit_value += os.system(command)
 
         self.elf = ELF(str(self.elf_path))
-        self.ensured = True
         return exit_value
     
     # 启动进程
