@@ -178,7 +178,7 @@ class Chunk(Heap):
         return num
 
     def __bytes__(self):
-        pword = lambda x : pack(x, self.SIZE_SZ, 'little', False).ljust(self.SIZE_SZ, b'\x00')
+        pword = lambda x : pack(x, self.SIZE_SZ * 8, 'little', False)
         payload = pword(self.prev_size)
         if self.size == -1:
             if self.norm_size == -1:
@@ -191,13 +191,14 @@ class Chunk(Heap):
         payload += pword(self.fd) + pword(self.bk)
         payload += pword(self.fd_nextsize) + pword(self.bk_nextsize)
         self.size = -1
+        self.norm_size = -1
         return payload
 
     def __getitem__(self, key):
         if isinstance(key, slice):
             byte = bytes(self)
-            start = self.SIZE_SZ * key.start
-            stop = self.SIZE_SZ * key.stop
+            start = self.SIZE_SZ * (key.start if key.start else 0)
+            stop = (self.SIZE_SZ * key.stop if key.stop else len(byte))
             return byte[start:stop]
         else:
             return self[key:key + 1]

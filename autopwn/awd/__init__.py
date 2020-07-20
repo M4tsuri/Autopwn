@@ -1,1 +1,1 @@
-__all__ = ['attacker', 'attack'. 'get_ip']
+__all__ = ['attacker', 'attack', 'get_ip']
