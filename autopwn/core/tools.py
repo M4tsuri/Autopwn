@@ -9,6 +9,8 @@ MMAPPED = 1
 NOT_MMAPPED = 0
 MAIN_ARENA = 0
 NOT_MAIN_ARENA = 1
+SMALLER = 0
+LARGER = 1
 
 class Csu64:
     def __init__(self, addr):
@@ -166,8 +168,38 @@ class Chunk(Heap):
             res = out & (~self.MALLOC_ALIGN_MASK)
             return res
 
-    # this does not include prev_size
+    def aligned_OK(self, size):
+        return bool((size & self.MALLOC_ALIGN_MASK) == 0)
+
+    def size2request(self, size, tend=LARGER):
+        if size == 0:
+            return 0
+        if not self.aligned_OK(size):
+            print("Chunk is not proper aligned, please try again.")
+            return None
+        form_size = size - self.SIZE_SZ * 2
+        if tend == LARGER:
+            req = form_size + 0x8
+        elif tend == SMALLER:
+            req = form_size - self.MALLOC_ALIGN_MASK + self.SIZE_SZ
+        else:
+            print("Incorrect tend.")
+            return None
+        assert(size == self.request2size(req))
+        return req
+
+    # this is the real size we get in chunk 
     def userSize(self, req):
+        padded = self.request2size(req)
+        if req + 2 * self.SIZE_SZ > padded:
+            return padded - self.SIZE_SZ
+        return padded - 2 * self.SIZE_SZ
+    
+    def maxSize(self, req):
+        padded = self.request2size(req)
+        return padded - self.SIZE_SZ
+    
+    def formSize(self, req):
         padded = self.request2size(req)
         return padded - 2 * self.SIZE_SZ
 
