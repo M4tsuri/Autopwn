@@ -27,7 +27,7 @@ def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
     a.run(argv=argv, qes=qes)
 
 
-def ctf(argv, exp=None, get_flag=None, bp=None, inter=None, needed=None):
+def ctf(argv, exp=None, get_flag=None, inter=None, needed=None):
     config = parse_config()
     # parse configuration file
 
@@ -40,8 +40,6 @@ def ctf(argv, exp=None, get_flag=None, bp=None, inter=None, needed=None):
     setattr(attack.Attack, 'get_flag', get_flag)
     ao = attack.Attack(argv=argv, config=config, inter=inter, needed=needed)
     
-    if bp:
-        ao.breakat(bp)
     if argv[1] == 'patch' and (inter or needed):
         if not ao.ensurelib():
             log.success("ELF File Modified.")
