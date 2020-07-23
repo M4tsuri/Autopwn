@@ -51,9 +51,7 @@ class Heap:
         self.MINSIZE = (self.MIN_CHUNK_SIZE + self.MALLOC_ALIGN_MASK) & (~self.MALLOC_ALIGN_MASK)
         # 最小块大小
 
-class Fastbins(Heap):
-    def __init__(self, arch):
-        super().__init__(arch)
+        # Fastbins
         self.MAX_FAST_SIZE = 80 * self.SIZE_SZ / 4
         # 有效的fastbin每个块的最大大小
         self.DEFAULT_MXFAST = 64 * self.SIZE_SZ / 4
@@ -61,20 +59,66 @@ class Fastbins(Heap):
         self.NFASTBINS = self.fastbin_index(self.request2size(self.MAX_FAST_SIZE) + 1)
         # fastbins中chunk的总数
 
-
-    # sz为堆块的总大小
-    def fastbin_index(self, sz):
-        res = (sz >> (4 if self.SIZE_SZ == 8 else 3)) - 2
-        return res
-
-class Bins(Heap):
-    def __init__(self, arch):
-        super().__init__(arch)
+        # Bins
         self.NBINS = 128
         self.NSMALLBINS = 64
         self.SMALLBIN_WIDTH = self.MALLOC_ALIGNMENT
         self.SMALLBIN_CORRECTION = (self.MALLOC_ALIGNMENT > 2 * self.SIZE_SZ)
         self.MIN_LARGE_SIZE = ((self.NSMALLBINS - self.SMALLBIN_CORRECTION) * self.SMALLBIN_WIDTH)
+
+    def request2size(self, req):
+        out = req + self.SIZE_SZ + self.MALLOC_ALIGN_MASK
+        if out < self.MINSIZE:
+            return self.MINSIZE
+        else:
+            res = out & (~self.MALLOC_ALIGN_MASK)
+            return res
+
+    def aligned_OK(self, size):
+        return bool((size & self.MALLOC_ALIGN_MASK) == 0)
+
+    def size2request(self, size, tend=LARGER):
+        if size == 0:
+            return 0
+        if not self.aligned_OK(size):
+            print("Chunk is not proper aligned, please try again.")
+            return None
+        form_size = size - self.SIZE_SZ * 2
+        if tend == LARGER:
+            req = form_size + 0x8
+        elif tend == SMALLER:
+            req = form_size - self.MALLOC_ALIGN_MASK + self.SIZE_SZ
+        else:
+            print("Incorrect tend.")
+            return None
+        assert(size == self.request2size(req))
+        return req
+
+    # this is the real size we get in chunk 
+    def userSize(self, req):
+        padded = self.request2size(req)
+        if req + 2 * self.SIZE_SZ > padded:
+            return padded - self.SIZE_SZ
+        return padded - 2 * self.SIZE_SZ
+    
+    def maxSize(self, req):
+        padded = self.request2size(req)
+        return padded - self.SIZE_SZ
+    
+    def formSize(self, req):
+        padded = self.request2size(req)
+        return padded - 2 * self.SIZE_SZ
+
+    @staticmethod
+    def setBit(num, idx, bit):
+        mask = bit << idx
+        num = num | mask
+        return num
+
+    # sz为堆块的总大小
+    def fastbin_index(self, sz):
+        res = (sz >> (4 if self.SIZE_SZ == 8 else 3)) - 2
+        return res
         
     def in_smallbin_range(self, sz) :
         return sz < self.MIN_LARGE_SIZE
@@ -137,13 +181,12 @@ class Bins(Heap):
             return self.smallbin_index(sz)
         return self.largebin_index(sz)
 
+    def csize2tidx(self, sz):
+        return (sz - self.MINSIZE + self.MALLOC_ALIGNMENT - 1) // self.MALLOC_ALIGNMENT
 
-class Unsortedbins(Heap):
-    def __init__(self, arch):
-        super().__init__(arch)
-    
-    def __getitem__(self, key):
-        pass
+    def usize2tidx(self, x):
+        return self.csize2tidx(self.request2size(x))
+
 
 class Chunk(Heap):
     def __init__(self, arch):
@@ -159,55 +202,6 @@ class Chunk(Heap):
         self.bk = 0
         self.fd_nextsize = 0
         self.bk_nextsize = 0
-
-    def request2size(self, req):
-        out = req + self.SIZE_SZ + self.MALLOC_ALIGN_MASK
-        if out < self.MINSIZE:
-            return self.MINSIZE
-        else:
-            res = out & (~self.MALLOC_ALIGN_MASK)
-            return res
-
-    def aligned_OK(self, size):
-        return bool((size & self.MALLOC_ALIGN_MASK) == 0)
-
-    def size2request(self, size, tend=LARGER):
-        if size == 0:
-            return 0
-        if not self.aligned_OK(size):
-            print("Chunk is not proper aligned, please try again.")
-            return None
-        form_size = size - self.SIZE_SZ * 2
-        if tend == LARGER:
-            req = form_size + 0x8
-        elif tend == SMALLER:
-            req = form_size - self.MALLOC_ALIGN_MASK + self.SIZE_SZ
-        else:
-            print("Incorrect tend.")
-            return None
-        assert(size == self.request2size(req))
-        return req
-
-    # this is the real size we get in chunk 
-    def userSize(self, req):
-        padded = self.request2size(req)
-        if req + 2 * self.SIZE_SZ > padded:
-            return padded - self.SIZE_SZ
-        return padded - 2 * self.SIZE_SZ
-    
-    def maxSize(self, req):
-        padded = self.request2size(req)
-        return padded - self.SIZE_SZ
-    
-    def formSize(self, req):
-        padded = self.request2size(req)
-        return padded - 2 * self.SIZE_SZ
-
-    @staticmethod
-    def setBit(num, idx, bit):
-        mask = bit << idx
-        num = num | mask
-        return num
 
     def __bytes__(self):
         pword = lambda x : pack(x, self.SIZE_SZ * 8, 'little', False)
