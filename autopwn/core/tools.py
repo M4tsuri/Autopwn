@@ -1,5 +1,9 @@
 from pwnlib.util.packing import p64
 from pwnlib.util.packing import pack
+from pwnlib.log import Logger
+
+log = Logger()
+
 
 ARCH_x64 = 64
 ARCH_x86 = 32
@@ -52,9 +56,9 @@ class Heap:
         # 最小块大小
 
         # Fastbins
-        self.MAX_FAST_SIZE = 80 * self.SIZE_SZ / 4
+        self.MAX_FAST_SIZE = 80 * self.SIZE_SZ // 4
         # 有效的fastbin每个块的最大大小
-        self.DEFAULT_MXFAST = 64 * self.SIZE_SZ / 4
+        self.DEFAULT_MXFAST = 64 * self.SIZE_SZ // 4
         # 默认的fastbin每个块的最大大小
         self.NFASTBINS = self.fastbin_index(self.request2size(self.MAX_FAST_SIZE) + 1)
         # fastbins中chunk的总数
@@ -75,13 +79,15 @@ class Heap:
             return res
 
     def aligned_OK(self, size):
+        if size < self.MINSIZE:
+            return False
         return bool((size & self.MALLOC_ALIGN_MASK) == 0)
 
     def size2request(self, size, tend=LARGER):
         if size == 0:
             return 0
         if not self.aligned_OK(size):
-            print("Chunk is not proper aligned, please try again.")
+            log.error("Invalid chunk size.")
             return None
         form_size = size - self.SIZE_SZ * 2
         if tend == LARGER:
@@ -89,7 +95,7 @@ class Heap:
         elif tend == SMALLER:
             req = form_size - self.MALLOC_ALIGN_MASK + self.SIZE_SZ
         else:
-            print("Incorrect tend.")
+            log.error("Invalid tend.")
             return None
         assert(size == self.request2size(req))
         return req
@@ -117,8 +123,7 @@ class Heap:
 
     # sz为堆块的总大小
     def fastbin_index(self, sz):
-        res = (sz >> (4 if self.SIZE_SZ == 8 else 3)) - 2
-        return res
+        return (sz >> (4 if self.SIZE_SZ == 8 else 3)) - 2
         
     def in_smallbin_range(self, sz) :
         return sz < self.MIN_LARGE_SIZE
@@ -129,43 +134,43 @@ class Heap:
     
     @staticmethod
     def largebin_index_32(sz):
-        if mid := (sz >> 6) <= 38:
+        if (mid := (sz >> 6)) <= 38:
             return 56 + mid
-        if mid := (sz >> 9) <= 20:
+        if (mid := (sz >> 9)) <= 20:
             return 91 + mid
-        if mid := (sz >> 12) <= 10:
+        if (mid := (sz >> 12)) <= 10:
             return 110 + mid
-        if mid := (sz >> 15) <= 4:
+        if (mid := (sz >> 15)) <= 4:
             return 119 + mid
-        if mid := (sz >> 18) <= 2:
+        if (mid := (sz >> 18)) <= 2:
             return 124 + mid
         return 126
 
     @staticmethod
     def largebin_index_32_big(sz):
-        if mid := (sz >> 6) <= 45:
+        if (mid := (sz >> 6)) <= 45:
             return 49 + mid
-        if mid := (sz >> 9) <= 20:
+        if (mid := (sz >> 9)) <= 20:
             return 91 + mid
-        if mid := (sz >> 12) <= 10:
+        if (mid := (sz >> 12)) <= 10:
             return 110 + mid
-        if mid := (sz >> 15) <= 4:
+        if (mid := (sz >> 15)) <= 4:
             return 119 + mid
-        if mid := (sz >> 18) <= 2:
+        if (mid := (sz >> 18)) <= 2:
             return 124 + mid
         return 126
 
     @staticmethod
     def largebin_index_64(sz):
-        if mid := (sz >> 6) <= 48:
+        if (mid := (sz >> 6)) <= 48:
             return 48 + mid
-        if mid := (sz >> 9) <= 20:
+        if (mid := (sz >> 9)) <= 20:
             return 91 + mid
-        if mid := (sz >> 12) <= 10:
+        if (mid := (sz >> 12)) <= 10:
             return 110 + mid
-        if mid := (sz >> 15) <= 4:
+        if (mid := (sz >> 15)) <= 4:
             return 119 + mid
-        if mid := (sz >> 18) <= 2:
+        if (mid := (sz >> 18)) <= 2:
             return 124 + mid
         return 126
 
