@@ -1,6 +1,7 @@
 from pwnlib.util.packing import p64
 from pwnlib.util.packing import pack
 from pwnlib.log import Logger
+from pwnlib import gdb
 
 log = Logger()
 
@@ -233,15 +234,44 @@ class Chunk(Heap):
             return byte[start:stop]
         else:
             return self[key:key + 1]
-        
-def breakat(elf, breakpoint: list):
-    real_addr = lambda addr: f"$rebase({hex(addr)})" if elf.pie else hex(addr)
-
-    break_str = "b *{}\n"
-    res_str = "\n"
-    for point in breakpoint:
-        res_str += break_str.format(real_addr(point))
-
-    res_str += "continue\n"
-    return res_str
     
+class Debug:
+    def __init__(self, ex, elf):
+        self.pie = elf.pie
+        self.ex = ex
+        self.script = '\n'
+        self.real_addr = lambda addr: f"$rebase({hex(addr)})" if self.pie else hex(addr)
+        
+    def b(self, *points):
+        break_str = "b *{}\n"
+        for point in points:
+            self.script += break_str.format(self.real_addr(point))
+        return self
+
+    def c(self):
+        self.script += "continue\n"
+        return self
+
+    def watch(self, points, mode='rw'):
+        if 'r' in mode and 'w' in mode:
+            watch_str = "awatch *{}"
+        elif 'r' in mode:
+            watch_str = "rwatch *{}"
+        elif 'w' in mode:
+            watch_str = "watch *{}"
+
+        for point in points:
+            self.script += watch_str.format(self.real_addr(point))
+        
+        return self
+
+    def catch(self, *args):
+        catch_str = 'catch '
+        for part in args:
+            catch_str += str(part) + ' '
+        self.script += catch_str
+        return self
+
+    def attach(self):
+        gdb.attach(self.ex, self.script)
+
