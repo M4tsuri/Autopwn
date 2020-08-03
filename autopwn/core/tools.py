@@ -64,6 +64,9 @@ class Heap:
         self.NFASTBINS = self.fastbin_index(self.request2size(self.MAX_FAST_SIZE) + 1)
         # fastbins中chunk的总数
 
+        self.TCACHE_MAX_BINS = 64
+        self.MAX_TCACHE_SIZE = self.tidx2usize(self.TCACHE_MAX_BINS - 1)
+
         # Bins
         self.NBINS = 128
         self.NSMALLBINS = 64
@@ -193,6 +196,9 @@ class Heap:
     def usize2tidx(self, x):
         return self.csize2tidx(self.request2size(x))
 
+    def tidx2usize(self, idx):
+        return idx * self.MALLOC_ALIGNMENT + self.MINSIZE - self.SIZE_SZ
+
 
 class Chunk(Heap):
     def __init__(self, arch):
@@ -223,7 +229,6 @@ class Chunk(Heap):
         payload += pword(self.fd) + pword(self.bk)
         payload += pword(self.fd_nextsize) + pword(self.bk_nextsize)
         self.size = -1
-        self.norm_size = -1
         return payload
 
     def __getitem__(self, key):
