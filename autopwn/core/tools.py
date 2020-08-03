@@ -16,6 +16,8 @@ MAIN_ARENA = 0
 NOT_MAIN_ARENA = 1
 SMALLER = 0
 LARGER = 1
+SINGLE_LINKED = 0
+DOUBLE_LINKED = 1
 
 class Csu64:
     def __init__(self, addr):
@@ -207,13 +209,15 @@ class Chunk(Heap):
         self.size = -1
         self.norm_size = -1
         self.req_size = -1
-        self.A = 0
-        self.M = 0
-        self.P = 1
+        self.A = MAIN_ARENA
+        self.M = NOT_MMAPPED
+        self.P = PREV_INUSE
         self.fd = 0
         self.bk = 0
         self.fd_nextsize = 0
         self.bk_nextsize = 0
+        self.cookie = 0
+        self.link = SINGLE_LINKED
 
     def __bytes__(self):
         pword = lambda x : pack(x, self.SIZE_SZ * 8, 'little', False)
@@ -226,7 +230,12 @@ class Chunk(Heap):
             self.size = self.setBit(self.size, 2, self.A)
             
         payload += pword(self.size)
-        payload += pword(self.fd) + pword(self.bk)
+        if self.link == SINGLE_LINKED:
+            pword_c = lambda x : pword(x ^ self.cookie)
+        else:
+            pword_c = pword
+        
+        payload += pword_c(self.fd) + pword_c(self.bk)
         payload += pword(self.fd_nextsize) + pword(self.bk_nextsize)
         self.size = -1
         return payload
@@ -239,7 +248,8 @@ class Chunk(Heap):
             return byte[start:stop]
         else:
             return self[key:key + 1]
-    
+
+
 class Debug:
     def __init__(self, ex, elf):
         self.pie = elf.pie
