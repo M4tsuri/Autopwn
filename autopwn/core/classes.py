@@ -1,12 +1,5 @@
-import re
+import requests
 
-class Autopwn(object):
-
-    def exp(self, a):
-        pass
-
-    def get_flag(self, a):
-        pass
 
 class Server:
     def __init__(self, server_info: dict, server_class: str):

@@ -50,5 +50,5 @@ def ctf(argv, exp=None, get_flag=None, inter=None, needed=None):
     tube = attack_obj.process_init()
     
     attack_obj.exp(tube)
-    flag = attack_obj.get_flag(a)
+    flag = attack_obj.get_flag(tube)
     tube.success(flag)

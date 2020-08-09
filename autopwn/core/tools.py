@@ -45,9 +45,14 @@ class Csu64:
         return bytes(self) + bytes(src)
 
 class Heap:
-    def __init__(self, attack_obj: Attack):
-        self.arch = attack_obj.elf.bits
-
+    def __init__(self, attack_obj=None, arch=None):
+        if attack_obj:
+            self.arch = attack_obj.elf.bits
+        elif arch:
+            self.arch = arch
+        else:
+            print("Error: arch not specified.")
+        
         self.SIZE_SZ = self.arch // 8
         # 表示平台字长
         self.MALLOC_ALIGNMENT = 2 * self.SIZE_SZ
@@ -204,8 +209,8 @@ class Heap:
 
 
 class Chunk(Heap):
-    def __init__(self, attack_obj: Attack):
-        super().__init__(attack_obj)
+    def __init__(self, attack_obj=None, arch=None):
+        super().__init__(attack_obj, arch)
         self.prev_size = 0
         self.size = -1
         self.norm_size = -1

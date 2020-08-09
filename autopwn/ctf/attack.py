@@ -2,8 +2,8 @@
 from pwnlib.util.proc import wait_for_debugger
 import sys
 import re
-import autopwn.core.classes
-import autopwn.ctf.less_tube
+from autopwn.core.classes import Server
+from autopwn.ctf.less_tube import add_features
 import lief
 from pwn import *
 from pathlib import Path
@@ -14,7 +14,7 @@ import itertools
 # run: run with local elf file
 # remote: attack remote server
 
-class Attack(autopwn.core.classes.Autopwn):
+class Attack:
     # directly pass argv when you call it, and use out special function
     def __init__(self, argv: list, config: dict, inter=None, needed=None):
         self.mode = argv[1]
@@ -28,7 +28,7 @@ class Attack(autopwn.core.classes.Autopwn):
 
         self.execute: pwnlib.tubes.sock.sock = None
         # our process to interact
-        self.server: autopwn.core.classes.Server = None
+        self.server: Server = None
         # the server to be connected when using remote mode
 
         self.work_path = Path(argv[0]).parent
@@ -103,5 +103,5 @@ class Attack(autopwn.core.classes.Autopwn):
         else:
             log.error("Parameter Error.")
 
-        self.execute = autopwn.ctf.less_tube.add_features(self.execute)
+        self.execute = add_features(self.execute)
         return self.execute
