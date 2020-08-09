@@ -35,21 +35,20 @@ def ctf(argv, exp=None, get_flag=None, inter=None, needed=None):
         log.error("Exp or Get_flag function not provided.")
         exit(1)
     
-    from autopwn.ctf import attack
-    setattr(attack.Attack, 'exp', exp)
-    setattr(attack.Attack, 'get_flag', get_flag)
-    ao = attack.Attack(argv=argv, config=config, inter=inter, needed=needed)
+    from autopwn.ctf.attack import Attack
+    setattr(Attack, 'exp', exp)
+    setattr(Attack, 'get_flag', get_flag)
+    attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)
     
     if argv[1] == 'patch' and (inter or needed):
-        if not ao.ensurelib():
+        if not attack_obj.ensure_lib():
             log.success("ELF File Modified.")
         else:
             log.failure("ELF File Modifying Failed.")
         exit(0)
     
-    a = ao.process_init()
+    tube = attack_obj.process_init()
     
-    ao.exp(a)
-    flag = ao.get_flag(a)
-    a.success(flag)
-
+    attack_obj.exp(tube)
+    flag = attack_obj.get_flag(a)
+    tube.success(flag)

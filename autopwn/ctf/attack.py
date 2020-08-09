@@ -18,6 +18,7 @@ class Attack(autopwn.core.classes.Autopwn):
     # directly pass argv when you call it, and use out special function
     def __init__(self, argv: list, config: dict, inter=None, needed=None):
         self.mode = argv[1]
+        self.debug_mode = False
         self.log_level = 'debug'
         self.config: dict = config
         # basic configuration
@@ -54,7 +55,7 @@ class Attack(autopwn.core.classes.Autopwn):
         return self.parsed
 
 
-    def ensurelib(self):
+    def ensure_lib(self):
         if type(self.parsed) != lief.Binary:
             self.parse()
     
@@ -84,15 +85,13 @@ class Attack(autopwn.core.classes.Autopwn):
     def process_init(self):
         context.arch = self.elf.get_machine_arch()
         context.log_level = self.log_level
-        if self.mode == 'ida' or self.mode == 'run' or self.mode == 'gdb':
+        if self.mode == 'run' or self.mode == 'gdb':
             if not self.elf_path.exists():
                 log.error("ELF file does not exist.")
                 exit(1)
-
+            
+            self.debug_mode = bool(self.mode == 'gdb')
             self.execute = process([str(self.elf_path)])
-
-            if self.mode == 'ida':
-                wait_for_debugger(self.execute.pid)
 
         elif self.mode == 'remote':
             self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])

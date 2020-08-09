@@ -2,6 +2,7 @@ from pwnlib.util.packing import p64
 from pwnlib.util.packing import pack
 from pwnlib.log import Logger
 from pwnlib import gdb
+from autopwn.ctf.attack import Attack
 
 log = Logger()
 
@@ -44,9 +45,9 @@ class Csu64:
         return bytes(self) + bytes(src)
 
 class Heap:
-    def __init__(self, arch):
-        self.arch = arch
-        
+    def __init__(self, attack_obj: Attack):
+        self.arch = attack_obj.elf.bits
+
         self.SIZE_SZ = self.arch // 8
         # 表示平台字长
         self.MALLOC_ALIGNMENT = 2 * self.SIZE_SZ
@@ -97,7 +98,7 @@ class Heap:
             return None
         form_size = size - self.SIZE_SZ * 2
         if tend == LARGER:
-            req = form_size + 0x8
+            req = form_size + self.SIZE_SZ
         elif tend == SMALLER:
             req = form_size - self.MALLOC_ALIGN_MASK + self.SIZE_SZ
         else:
@@ -203,8 +204,8 @@ class Heap:
 
 
 class Chunk(Heap):
-    def __init__(self, arch):
-        super().__init__(arch)
+    def __init__(self, attack_obj: Attack):
+        super().__init__(attack_obj)
         self.prev_size = 0
         self.size = -1
         self.norm_size = -1
@@ -251,16 +252,21 @@ class Chunk(Heap):
 
 
 class Debug:
-    def __init__(self, ex, elf):
-        self.pie = elf.pie
-        self.ex = ex
+    def __init__(self, dbg_obj: Attack):
+        self.pie = dbg_obj.elf.pie
+        self.ex = dbg_obj.execute
+        self.dbg_on = dbg_obj.debug_mode
         self.script = '\n'
         self.real_addr = lambda addr: f"$rebase({hex(addr)})" if self.pie else hex(addr)
         
     def b(self, *points):
-        break_str = "b *{}\n"
+        baddr_str = "b *{}\n"
+        bfunc_str = "b {}\n"
         for point in points:
-            self.script += break_str.format(self.real_addr(point))
+            if type(point) == type('deadbeef'):
+                self.script += bfunc_str.format(point)
+            elif type(point) == type(0xdeadbeef):
+                self.script += baddr_str.format(self.real_addr(point))
         return self
 
     def c(self):
@@ -288,5 +294,5 @@ class Debug:
         return self
 
     def attach(self):
-        gdb.attach(self.ex, self.script)
-
+        if self.dbg_on:
+            gdb.attach(self.ex, self.script)
