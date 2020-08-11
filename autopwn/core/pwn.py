@@ -32,6 +32,9 @@ def ctf(argv, inter=None, needed=None):
     # parse configuration file
     
     from autopwn.ctf.attack import Attack
+    if type(needed) != list:
+        needed = list(needed)
+        
     attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)
     
     if argv[1] == 'patch' and (inter or needed):
