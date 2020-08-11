@@ -27,17 +27,11 @@ def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
     a.run(argv=argv, qes=qes)
 
 
-def ctf(argv, exp=None, get_flag=None, inter=None, needed=None):
+def ctf(argv, inter=None, needed=None):
     config = parse_config()
     # parse configuration file
-
-    if exp == None or get_flag == None:
-        log.error("Exp or Get_flag function not provided.")
-        exit(1)
     
     from autopwn.ctf.attack import Attack
-    setattr(Attack, 'exp', exp)
-    setattr(Attack, 'get_flag', get_flag)
     attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)
     
     if argv[1] == 'patch' and (inter or needed):
