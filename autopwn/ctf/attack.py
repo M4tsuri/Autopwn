@@ -94,7 +94,7 @@ class Attack:
             self.execute = process([str(self.elf_path)])
 
         elif self.mode == 'remote':
-            self.server = autopwn.core.classes.Server(self.config['server'], self.config['server_class'])
+            self.server = Server(self.config['server'], self.config['server_class'])
             try:
                 self.execute = self.server.connect()
             except exception.PwnlibException:

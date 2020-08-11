@@ -241,7 +241,7 @@ class Chunk(Heap):
         else:
             pword_c = pword
         
-        payload += pword_c(self.fd) + pword_c(self.bk)
+        payload += pword_c(self.fd) + pword(self.bk)
         payload += pword(self.fd_nextsize) + pword(self.bk_nextsize)
         self.size = -1
         return payload
