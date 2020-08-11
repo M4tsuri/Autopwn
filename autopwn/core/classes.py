@@ -1,6 +1,5 @@
 import requests
 
-
 class Server:
     def __init__(self, server_info: dict, server_class: str):
         self.ip_port = self._ip_parse(server_info["ip_port"])
