@@ -5,6 +5,7 @@ from pwnlib.log import Logger
 
 log = Logger()
 
+
 def parse_config():
     try:
         with open("autopwn.conf") as config_file:
@@ -14,16 +15,13 @@ def parse_config():
         log.error("Fatal: Configure File Not Found")
         exit(1)
 
+
 def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
     config = parse_config()
 
     assert (exp != None and get_flag != None and submit != None and targets != None and qes != None)
     from autopwn.awd import attacker
     a = attacker.Attacker(config)
-    setattr(attacker.Attacker, 'targets', targets)
-    setattr(attacker.Attacker, 'submit', submit)
-    setattr(attacker.Attacker, 'exp', exp)
-    setattr(attacker.Attacker, 'get_flag', get_flag)
     a.run(argv=argv, qes=qes)
 
 
@@ -33,8 +31,8 @@ def ctf(argv, inter=None, needed=None):
     
     from autopwn.ctf.attack import Attack
     if type(needed) != list:
-        needed = list(needed)
-        
+        needed = [needed]
+
     attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)
     
     if argv[1] == 'patch' and (inter or needed):
