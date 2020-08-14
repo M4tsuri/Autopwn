@@ -4,6 +4,7 @@ import sys
 import re
 from autopwn.core.classes import Server
 from autopwn.ctf.less_tube import add_features
+from autopwn.core.tools import Debug
 import lief
 from pwn import *
 from pathlib import Path
@@ -90,8 +91,15 @@ class Attack:
                 log.error("ELF file does not exist.")
                 exit(1)
             
-            self.debug_mode = bool(self.mode == 'gdb')
-            self.execute = process([str(self.elf_path)])
+            if self.elf.arch in ("amd64", "i386") and self.mode == 'dbg':
+                self.debug_mode = True
+                self.execute = process([str(self.elf_path)])
+            else:
+                self.dbg = Debug(self)
+                assert(hasattr(self, 'prepare_debug'))
+                self.prepare_debug()
+                self.execute = self.dbg.start()
+                
 
         elif self.mode == 'remote':
             self.server = Server(self.config['server'], self.config['server_class'])

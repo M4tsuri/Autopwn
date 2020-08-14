@@ -30,7 +30,7 @@ def ctf(argv, inter=None, needed=None):
     # parse configuration file
     
     from autopwn.ctf.attack import Attack
-    if type(needed) != list:
+    if needed and (type(needed) != list):
         needed = [needed]
 
     attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)

@@ -6,6 +6,7 @@ class Debug:
         self.pie = dbg_obj.elf.pie
         self.ex = dbg_obj.execute
         self.dbg_on = dbg_obj.debug_mode
+        self.elf_path = dbg_obj.elf_path
         self.script = '\n'
         self.real_addr = lambda addr: f"$rebase({hex(addr)})" if self.pie else hex(addr)
         
@@ -46,3 +47,11 @@ class Debug:
     def attach(self):
         if self.dbg_on:
             gdb.attach(self.ex, self.script)
+
+
+    def cmd(self, command):
+        self.script += (command + '\n')
+        return self
+
+    def start(self):
+        return gdb.debug(self.elf_path, self.script)
