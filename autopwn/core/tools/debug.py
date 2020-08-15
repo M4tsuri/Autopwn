@@ -1,8 +1,7 @@
 from pwnlib import gdb
-from autopwn.ctf.attack import Attack
 
 class Debug:
-    def __init__(self, dbg_obj: Attack):
+    def __init__(self, dbg_obj):
         self.pie = dbg_obj.elf.pie
         self.ex = dbg_obj.execute
         self.dbg_on = dbg_obj.debug_mode
@@ -54,4 +53,4 @@ class Debug:
         return self
 
     def start(self):
-        return gdb.debug(self.elf_path, self.script)
+        return gdb.debug(str(self.elf_path), self.script)
