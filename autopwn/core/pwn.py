@@ -44,7 +44,21 @@ def ctf(argv, inter=None, needed=None):
     
     tube = attack_obj.process_init()
     
-    attack_obj.exp(tube)
+    ret_val = attack_obj.exp(tube)
+
+    if ret_val == None:
+        flag = attack_obj.get_flag(tube)
+        tube.success(flag)
+        return attack_obj
+    
+    assert(hasattr(attack_obj, 'replay'))
+    
+    while ret_val != True:
+        tube = attack_obj.replay()
+        if tube == False:
+            break
+        ret_val = attack_obj.exp(tube)
+
     flag = attack_obj.get_flag(tube)
-    tube.success(flag)
+    log.success(flag)
     return attack_obj

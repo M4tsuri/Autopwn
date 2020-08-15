@@ -113,3 +113,15 @@ class Attack:
 
         self.execute = add_features(self.execute)
         return self.execute
+
+
+    def replay(self):
+        try:
+            self.execute.close()
+        except:
+            log.info("tube already closed.")
+    
+        if self.mode == 'gdb':
+            return False
+
+        return self.process_init()
