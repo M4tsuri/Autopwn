@@ -6,6 +6,7 @@ class Debug:
         self.ex = dbg_obj.execute
         self.dbg_on = dbg_obj.debug_mode
         self.elf_path = dbg_obj.elf_path
+        self.attached = False
         self.script = '\n'
         self.real_addr = lambda addr: f"$rebase({hex(addr)})" if self.pie else hex(addr)
         
@@ -44,7 +45,8 @@ class Debug:
         return self
 
     def attach(self):
-        if self.dbg_on:
+        if self.dbg_on and not self.attached:
+            self.attached = True
             gdb.attach(self.ex, self.script)
 
 
@@ -53,4 +55,5 @@ class Debug:
         return self
 
     def start(self):
+        self.attached = True
         return gdb.debug(str(self.elf_path), self.script)
