@@ -2,6 +2,8 @@ import re
 import os
 import yaml
 from pwnlib.log import Logger
+from time import sleep
+from pwn import context
 
 log = Logger()
 
@@ -16,13 +18,56 @@ def parse_config():
         exit(1)
 
 
-def awd(argv, exp=None, get_flag=None, submit=None, targets=None, qes=None):
+def awd(argv, inter=None, needed=None, gap=60 * 10):
     config = parse_config()
+    # parse configuration file
+    
+    from autopwn.ctf.attack import Attack
 
-    assert (exp != None and get_flag != None and submit != None and targets != None and qes != None)
-    from autopwn.awd import attacker
-    a = attacker.Attacker(config)
-    a.run(argv=argv, qes=qes)
+    if needed and (type(needed) != list):
+        needed = [needed]
+
+
+    attack_obj = Attack(argv=[argv[0], 'remote'], config=config, inter=inter, needed=needed)
+
+    assert(hasattr(attack_obj, 'ip_list'))
+    assert(hasattr(attack_obj, 'get_flag'))
+    assert(hasattr(attack_obj, 'submit_flag'))
+    assert(hasattr(attack_obj, 'exp'))
+    assert(hasattr(attack_obj, 'replay'))
+
+    ip_list = attack_obj.ip_list()
+    host_count = len(ip_list)
+    log.info(f"Totally {host_count} hosts.")
+    turn_count = 0
+    attack_obj.log_level = 'info'
+
+    while True:
+        success_count = 0
+        for ip in attack_obj.ip_list():
+            try:
+                log.info("Attacking " + ip)
+                attack_obj.config['server']['ip_port'] = ip
+                tube = attack_obj.replay()
+                attack_obj.exp(tube)
+                flag = attack_obj.get_flag(tube).decode()
+                res = attack_obj.submit_flag(flag)
+                if res:
+                    log.success("Success, flag is " + flag)
+                    success_count += 1
+                else:
+                    log.success("Wrong flag: " + flag)
+                print("")
+            except KeyboardInterrupt:
+                exit(0)
+            except BaseException as e:
+                log.warning("Error: " + str(e))
+        
+        turn_count += 1
+        log.info(f"Turn {turn_count}, {success_count} succeeded, {host_count - success_count} failed.")
+        print("")
+        sleep(gap)
+    return attack_obj
 
 
 def ctf(argv, inter=None, needed=None):
@@ -34,6 +79,9 @@ def ctf(argv, inter=None, needed=None):
         needed = [needed]
 
     attack_obj = Attack(argv=argv, config=config, inter=inter, needed=needed)
+
+    assert(hasattr(attack_obj, 'get_flag'))
+    assert(hasattr(attack_obj, 'exp'))
     
     if argv[1] == 'patch' and (inter or needed):
         if not attack_obj.ensure_lib():

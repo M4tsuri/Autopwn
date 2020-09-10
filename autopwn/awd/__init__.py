@@ -1,1 +1,0 @@
-__all__ = ['attacker', 'attack', 'get_ip']

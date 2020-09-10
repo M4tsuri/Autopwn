@@ -19,6 +19,7 @@ class Attack:
     # directly pass argv when you call it, and use out special function
     def __init__(self, argv: list, config: dict, inter=None, needed=None):
         self.mode = argv[1]
+        self.argv = argv
         self.debug_mode = False
         self.log_level = 'debug'
         self.config: dict = config
@@ -98,7 +99,7 @@ class Attack:
                 self.execute = self.dbg.start()
             else:
                 self.debug_mode = bool(self.mode == 'gdb')
-                self.execute = process([str(self.elf_path)])
+                self.execute = process([str(self.elf_path)] + self.argv[2:])
                 
 
         elif self.mode == 'remote':
@@ -120,8 +121,5 @@ class Attack:
             self.execute.close()
         except:
             log.info("tube already closed.")
-    
-        if self.mode == 'gdb':
-            return False
 
         return self.process_init()
