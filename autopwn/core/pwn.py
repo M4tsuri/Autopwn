@@ -18,7 +18,7 @@ def parse_config():
         exit(1)
 
 
-def awd(argv, inter=None, needed=None, gap=60 * 10):
+def awd(argv, inter=None, needed=None, gap):
     config = parse_config()
     # parse configuration file
     
@@ -70,7 +70,10 @@ def awd(argv, inter=None, needed=None, gap=60 * 10):
     return attack_obj
 
 
-def ctf(argv, inter=None, needed=None):
+def ctf(argv, inter=None, needed=None, gap=60 * 10):
+    if argv[1] == 'awd':
+        return awd(aegv, inter, needed, gap)
+
     config = parse_config()
     # parse configuration file
     
