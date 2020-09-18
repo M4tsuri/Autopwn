@@ -24,7 +24,7 @@ class Server:
     def _nc_connect(self):
         from pwnlib.tubes.remote import remote
         try:
-            return remote(self.ip_port['host'], self.ip_port['port'], timeout=3)
+            return remote(self.ip_port['host'], self.ip_port['port'], timeout=10)
         except BaseException as e:
             print("Connention to netcat failed: " + str(e))
             exit(1)

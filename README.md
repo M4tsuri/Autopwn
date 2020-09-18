@@ -53,11 +53,6 @@ Autopwn项目，致力于提供如下特性：
 .
 ├── \
 ├── autopwn
-│   ├── awd                       # awd框架，未实现
-│   │   ├── attacker.py           # //TODO
-│   │   ├── attack.py             # //TODO
-│   │   ├── get_ip.py             # 获取目标列表
-│   │   └── __init__.py
 │   ├── core
 │   │   ├── classes.py            # 存放核心类
 │   │   ├── __init__.py
