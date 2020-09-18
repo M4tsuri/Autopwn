@@ -18,7 +18,7 @@ def parse_config():
         exit(1)
 
 
-def awd(argv, inter=None, needed=None, gap):
+def awd(argv, inter=None, needed=None, gap=10 * 60):
     config = parse_config()
     # parse configuration file
     

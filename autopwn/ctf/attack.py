@@ -86,6 +86,8 @@ class Attack:
     # 启动进程
     def process_init(self):
         context.arch = self.elf.get_machine_arch()
+        context.word_size = self.elf.bits
+        context.endian = self.elf.endian
         context.log_level = self.log_level
         if self.mode == 'run' or self.mode == 'gdb':
             if not self.elf_path.exists():
