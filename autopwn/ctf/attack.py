@@ -39,6 +39,7 @@ class Attack:
 
         self.inter_modified = bool(inter != None)
         self.needed_modified = bool(needed != None)
+        self.gdb_attached = False
 
         if self.needed_modified:
             self.needed_path = [Path(lib).resolve() for lib in needed]
@@ -94,9 +95,8 @@ class Attack:
                 log.error("ELF file does not exist.")
                 exit(1)
             
-            if self.elf.arch not in ("amd64", "i386") and self.mode == 'gdb':
+            if self.mode == 'gdb' and hasattr(self, 'prepare_debug'):
                 self.dbg = Debug(self)
-                assert(hasattr(self, 'prepare_debug'))
                 self.prepare_debug()
                 self.execute = self.dbg.start()
             else:

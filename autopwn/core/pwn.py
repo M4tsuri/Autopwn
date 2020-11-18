@@ -58,10 +58,8 @@ def awd(argv, inter=None, needed=None, gap=10 * 60):
                 else:
                     log.success("Wrong flag: " + flag)
                 print("")
-            except KeyboardInterrupt:
-                exit(0)
             except BaseException as e:
-                log.warning("Error: " + str(e))
+                log.warning(f"Error: {e}")
         
         turn_count += 1
         log.info(f"Turn {turn_count}, {success_count} succeeded, {host_count - success_count} failed.")
@@ -72,7 +70,7 @@ def awd(argv, inter=None, needed=None, gap=10 * 60):
 
 def ctf(argv, inter=None, needed=None, gap=60 * 10):
     if argv[1] == 'awd':
-        return awd(aegv, inter, needed, gap)
+        return awd(argv, inter, needed, gap)
 
     config = parse_config()
     # parse configuration file

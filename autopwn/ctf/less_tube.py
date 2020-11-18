@@ -12,11 +12,7 @@ def add_features(src):
     return src
 
 def verify_valid(self, func, **kwargs):
-    try:
-        return func(self, kwargs)
-    except EOFError:
-        self.exception("Error: EOFError")
-        return None
+    return func(self, kwargs)
 
 def polling(self, templates=None, count=0):
     assert templates != None

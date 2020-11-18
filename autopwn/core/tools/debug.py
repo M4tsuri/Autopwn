@@ -2,11 +2,13 @@ from pwnlib import gdb
 
 class Debug:
     def __init__(self, dbg_obj):
+        self.proc = dbg_obj
         self.pie = dbg_obj.elf.pie
         self.ex = dbg_obj.execute
+        self.params = dbg_obj.argv[2:]
         self.dbg_on = dbg_obj.debug_mode
         self.elf_path = dbg_obj.elf_path
-        self.attached = False
+        self.attached = dbg_obj.gdb_attached
         self.script = '\n'
         self.real_addr = lambda addr: f"$rebase({hex(addr)})" if self.pie else hex(addr)
         
@@ -25,12 +27,13 @@ class Debug:
         return self
 
     def watch(self, points, mode='rw'):
-        if 'r' in mode and 'w' in mode:
-            watch_str = "awatch *{}"
-        elif 'r' in mode:
-            watch_str = "rwatch *{}"
-        elif 'w' in mode:
-            watch_str = "watch *{}"
+        modes = {
+            'w': "awatch *{}",
+            'r': "rwatch *{}",
+            'rw': "watch *{}"
+        }
+        
+        watch_str = modes[mode]
 
         for point in points:
             self.script += watch_str.format(self.real_addr(point))
@@ -45,8 +48,8 @@ class Debug:
         return self
 
     def attach(self):
-        if self.dbg_on and not self.attached:
-            self.attached = True
+        if self.dbg_on and not self.proc.gdb_attached:
+            self.proc.gdb_attached = True
             gdb.attach(self.ex, self.script)
 
 
@@ -55,5 +58,7 @@ class Debug:
         return self
 
     def start(self):
-        self.attached = True
-        return gdb.debug(str(self.elf_path), self.script)
+        if self.proc.gdb_attached:
+            return None
+        self.proc.gdb_attached = True
+        return gdb.debug([str(self.elf_path)] + self.params, self.script)
