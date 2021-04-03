@@ -1,5 +1,6 @@
 from pwnlib.util.packing import p64
 
+# this code has some weird behavior, do not use it
 class Csu64:
     def __init__(self, addr):
         self.addr = addr

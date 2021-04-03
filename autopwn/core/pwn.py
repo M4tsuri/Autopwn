@@ -4,6 +4,7 @@ import yaml
 from pwnlib.log import Logger
 from time import sleep
 from pwn import context
+from concurrent.futures import ThreadPoolExecutor
 
 log = Logger()
 
@@ -65,7 +66,6 @@ def awd(argv, inter=None, needed=None, gap=10 * 60):
         log.info(f"Turn {turn_count}, {success_count} succeeded, {host_count - success_count} failed.")
         print("")
         sleep(gap)
-    return attack_obj
 
 
 def ctf(argv, inter=None, needed=None, gap=60 * 10):
